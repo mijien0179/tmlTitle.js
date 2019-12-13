@@ -13,7 +13,7 @@ function tmlTitle(data){
 }
 
 function moreLessChanger(data) {
-    let list = document.querySelectorAll(`[data-ke-type='moreLess']`);
+    let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
 
     function close(btn, title) {
         btn.innerText = title;
@@ -23,16 +23,16 @@ function moreLessChanger(data) {
         btn.innerText = title;
     }
 
-    for (let i = 0; i < list.length; ++i) {
-        let visBtn = list[i].querySelector('a.btn-toggle-moreless');
-        let content = list[i].querySelectorAll('div.moreless-content *');
+    for (let i = 0; i < parent.length; ++i) {
+        let visBtn = parent[i].querySelector('a.btn-toggle-moreless');
+        let content = parent[i].querySelectorAll('div.moreless-content *');
         let openTitleRaw = content[0].tagName == 'P' && content[0];
         let closeTitleRaw = content[content.length-1].tagName == 'P' && content[content.length-1];
         data.prevWord = data.prevWord || "# ";
         let openTitle = null;
         if(openTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord){
             openTitle = openTitleRaw.innerText.substr(data.prevWord.length);
-            list[i].setAttribute('data-text-more', openTitle);
+            parent[i].setAttribute('data-text-more', openTitle);
             if(data.delTitleContent === true){
                 openTitleRaw.remove();
             }
@@ -40,7 +40,7 @@ function moreLessChanger(data) {
         let closeTitle = null;
         if(closeTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord){
             closeTitle = closeTitleRaw.innerText.substr(data.prevWord.length);
-            list[i].setAttribute('data-text-less', closeTitle);
+            parent[i].setAttribute('data-text-less', closeTitle);
             if(data.delTitleContent === true){
                 closeTitleRaw.remove();
             }
@@ -51,7 +51,7 @@ function moreLessChanger(data) {
 
             visBtn.addEventListener('click', function(e){
                 e.preventDefault();
-                if(!list[i].classList.contains('open')){
+                if(!parent[i].classList.contains('open')){
                     if(openTitle){
                         close(visBtn, openTitle);
                     }
