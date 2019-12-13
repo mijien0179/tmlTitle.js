@@ -25,7 +25,7 @@ function tmlTitle(data) {
             let closeTitleRaw = content[content.length - 1].tagName == 'P' && content[content.length - 1];
             data.prevWord = data.prevWord || "# ";
             let openTitle = null;
-            if (openTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord) {
+            if (openTitleRaw && openTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord) {
                 openTitle = openTitleRaw.innerText.substr(data.prevWord.length);
                 parent[i].setAttribute('data-text-more', openTitle);
                 if (data.delTitleContent === true) {
@@ -33,7 +33,7 @@ function tmlTitle(data) {
                 }
             }
             let closeTitle = null;
-            if (closeTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord) {
+            if (closeTitleRaw && closeTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord) {
                 closeTitle = closeTitleRaw.innerText.substr(data.prevWord.length);
                 parent[i].setAttribute('data-text-less', closeTitle);
                 if (data.delTitleContent === true) {
