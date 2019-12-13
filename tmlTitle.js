@@ -3,7 +3,7 @@
 // https://pang2h.tistory.com/
 // https://github.com/mijien0179/tmlTitle.js
 //
-// v1.0
+// v1.0.1
 // 2019.12.11.(Wed).
 */
 function tmlTitle(data) {
