@@ -24,10 +24,13 @@ https://github.com/mijien0179/tmlTitle.js/releases
 ---
 스크립트의 구성 속성은 다음과 같습니다.
 
-|속성 이름                  |데이터 타입            |기본값     |설명   |
-|:-------------------------:|:---------------------:|:---------:|-------|
-|delTitleContent            |Boolean                |false      |타이틀로 쓰는 문장 삭제|
-|prevWord                   |String                 |'# '       |접두사 지정|
+|속성 이름                  |데이터 타입            |기본값     |설명   					|
+|:-------------------------:|:---------------------:|:---------:|---------------------------|
+|delTitleContent            |Boolean                |false      |타이틀로 쓰는 문장 삭제	|
+|prevWord                   |String                 |'# '       |접두사 지정				|
+|addButton					|Boolean				|false		|하단에 여닫는 버튼 추가	|
+|defaultOpenTitle			|String					|'더보기'	|기본 타이틀(상태:closed)	|
+|defaultCloseTitle			|String					|'닫기'		|기본 타이틀(상태:opened)	|
 
 ---
 ### 스크립트 적용 방법
@@ -64,8 +67,10 @@ https://github.com/mijien0179/tmlTitle.js/releases
 아래 코드를 그 다음으로 작성해줍니다.
 ```
 	<script>
-		tmlTitle({
-			delTitleContent:true
+		window.addEventListener('load', function(){
+			tmlTitle({
+				delTitleContent:true
+			});
 		});
 	</script>
 ```
