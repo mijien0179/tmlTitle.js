@@ -80,56 +80,50 @@ function tmlTitle(data) {
     }
 
     function tagIndexor(data){
-        let doc = document.querySelectorAll(`${data.contentQuery} > *`);
+        {   // indexor creatable
+            if(document.body.id != 'tt-body-page') return;
+            let pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
+            data.trigger = data.trigger || '# index';
+            if(pDoc[pDoc.length-1].innerText.toLowerCase() != data.trigger) return;
+            else pDoc[pDoc.length-1].remove();
+        }
+
+        let curTag = document.querySelector(`${data.contentQuery} > hr`);
         let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
         data.indexorTitleTag = data.indexorTitleTag || 'h3';
+        data.indexorTitle = data.indexorTitle || 'Index';
         let orderIndexor = {
-             open: data.orderIndexor && `<ol>`  || `<ul>`,
-            close: data.orderIndexor && `</ol>` || `</ul>`
+            open: data.orderIndex && `<ol>`  || `<ul>`,
+            close: data.orderIndex && `</ol>` || `</ul>`
         };
-        let index = 0;
-        let node = [[]];
-        for(let i = 0 ; i < doc.length;++i){
-            let curTagName = doc[i].tagName.toLowerCase();
-            if(curTagName === `hr`){
-                if(node[node.length -1].length != 0){
-                    node[node.length] = [];
-                    index = 0;
-                }
-                continue;
-            }
+        let nod = [];
+        while(curTag){
+            let curTagName = curTag.tagName.toLowerCase();
             if(indexorTagList.contains(curTagName)){
-                if(doc[i].id == ''){
-                    doc[i].id = `tmlTitle-tagIndexor-${i}`;
+                let idValue = `tmlTitle-tagIndexor-${nod.length}`;
+                if(curTag.id == ''){
+                    curTag.id = idValue;
+                }else{
+                    idValue = curTag.id;
                 }
-                node[node.length - 1].push({
-                    name:doc[i].tagName,
-                    id:doc[i].id,
-                    text:doc[i].innerText
+                nod.push({
+                    id:idValue,
+                    text:curTag.innerText
                 });
             }
+            curTag = curTag.nextElementSibling;
         }
-
-        let idxPanel = `<div id="tmlTitle-tagIndexor"><${data.indexorTitleTag}>Index</${data.indexorTitleTag}>`;
-        
-        for(let i = 0; i < node.length;++i){
-            if(node[i] == null) continue;
-            idxPanel += `${orderIndexor.open}<li><a href="#${node[i][0].id}">${node[i][0].text}</a>`;
-            if(1 < node[i].length){
-                idxPanel += `${orderIndexor.open}`
-                for(let k = 1; k < node[i].length;++i){
-                    idxPanel += `<li><a href="#${node[i][k].id}">${node[i][k].text}</a></li>`
-                }
-                idxPanel += `${orderIndexor.close}`;
-            }
-            idxPanel += `${orderIndexor.close}`;
+        if(nod == []) return;
+        let ret = `<div id="tmlTitle-tagIndexor"><${data.indexorTitleTag}>${data.indexorTitle}</${data.indexorTitleTag}>`;
+        ret += `${orderIndexor.open}`
+        for(let i = 0; i < nod.length;++i){
+            ret += `<li><a href="#${nod[i].id}">${nod[i].text}</a></li>`;
         }
+        ret += `${orderIndexor.close}</div>`;
+        curTag = document.querySelector(`${data.contentQuery} > hr`);
 
-        idxPanel += `</div>`;
+        curTag.outerHTML += ret + curTag.outerHTML;
 
-        let fhl = document.querySelector(`${data.contentQuery} > hr`);
-        fhl.outerHTML += idxPanel + fhl.outerHTML;
-        console.log(idxPanel);
     }
 
     if(data.moreLessChanger){
@@ -142,6 +136,8 @@ function tmlTitle(data) {
 
     console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트\n` +
                 `개발자블로그 : ${scriptInfo.blog}\n` +
-                `Git 주소: ${scriptInfo.git}`);
+                `Git 주소: ${scriptInfo.git}\n\n` +
+                `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제를 제한합니다.\n`+
+                `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.`);
 
 }
