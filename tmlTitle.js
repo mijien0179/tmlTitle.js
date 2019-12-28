@@ -3,9 +3,16 @@
 // https://pang2h.tistory.com/
 // https://github.com/mijien0179/tmlTitle.js
 //
-// 2019.12.14.(Sat).
+// 2019.12.28.(Sat).
 */
 function tmlTitle(data) {
+
+    let scriptInfo = {
+        author:`Min`,
+        blog:`https://pang2h.tistory.com?tmlTitle`,
+        git:`https://github.com/mijien0179/tmlTitle.js`
+    }
+
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
 
@@ -72,7 +79,69 @@ function tmlTitle(data) {
         }
     }
 
-    moreLessChanger(data);
+    function tagIndexor(data){
+        let doc = document.querySelectorAll(`${data.contentQuery} > *`);
+        let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+        data.indexorTitleTag = data.indexorTitleTag || 'h3';
+        let orderIndexor = {
+             open: data.orderIndexor && `<ol>`  || `<ul>`,
+            close: data.orderIndexor && `</ol>` || `</ul>`
+        };
+        let index = 0;
+        let node = [[]];
+        for(let i = 0 ; i < doc.length;++i){
+            let curTagName = doc[i].tagName.toLowerCase();
+            if(curTagName === `hr`){
+                if(node[node.length -1].length != 0){
+                    node[node.length] = [];
+                    index = 0;
+                }
+                continue;
+            }
+            if(indexorTagList.contains(curTagName)){
+                if(doc[i].id == ''){
+                    doc[i].id = `tmlTitle-tagIndexor-${i}`;
+                }
+                node[node.length - 1].push({
+                    name:doc[i].tagName,
+                    id:doc[i].id,
+                    text:doc[i].innerText
+                });
+            }
+        }
 
+        let idxPanel = `<div id="tmlTitle-tagIndexor"><${data.indexorTitleTag}>Index</${data.indexorTitleTag}>`;
+        
+        for(let i = 0; i < node.length;++i){
+            if(node[i] == null) continue;
+            idxPanel += `${orderIndexor.open}<li><a href="#${node[i][0].id}">${node[i][0].text}</a>`;
+            if(1 < node[i].length){
+                idxPanel += `${orderIndexor.open}`
+                for(let k = 1; k < node[i].length;++i){
+                    idxPanel += `<li><a href="#${node[i][k].id}">${node[i][k].text}</a></li>`
+                }
+                idxPanel += `${orderIndexor.close}`;
+            }
+            idxPanel += `${orderIndexor.close}`;
+        }
+
+        idxPanel += `</div>`;
+
+        let fhl = document.querySelector(`${data.contentQuery} > hr`);
+        fhl.outerHTML += idxPanel + fhl.outerHTML;
+        console.log(idxPanel);
+    }
+
+    if(data.moreLessChanger){
+        moreLessChanger(data.moreLessChanger);
+    }
+
+    if(data.tagIndexor){
+        tagIndexor(data.tagIndexor);
+    }
+
+    console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트\n` +
+                `개발자블로그 : ${scriptInfo.blog}\n` +
+                `Git 주소: ${scriptInfo.git}`);
 
 }
