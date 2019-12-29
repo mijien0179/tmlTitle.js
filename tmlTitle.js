@@ -3,7 +3,7 @@
 // https://pang2h.tistory.com/
 // https://github.com/mijien0179/tmlTitle.js
 //
-// 2019.12.28.(Sat).
+// 2019.12.29.(Sun).
 */
 function tmlTitle(data) {
 
