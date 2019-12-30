@@ -87,7 +87,7 @@ CSS 선택자에 대한 내용은 [다음 포스트](https://code.tutsplus.com/k
 ### 이용 방법
 
 ![적용 방법](./images/indexor-applying.png)
-글의 마지막에 **trigger 속성으로 준 문자열을 작성**해주면 됩니다.
+글의 마지막에 **trigger 속성으로 준 문자열을 작성**해주면 됩니다. 문자열은 좌,우 공백이 존재하는 경우 스크립트가 자동으로 잘라냅니다. 속성에서의 trigger 문자열도 함께 자르므로 문제는 없습니다.
 
 ![적용 예](./images/indexor-result.png)
 적용 예 : https://pang2h.tistory.com/260

@@ -3,15 +3,21 @@
 // https://pang2h.tistory.com/
 // https://github.com/mijien0179/tmlTitle.js
 //
-// 2019.12.29.(Sun).
 */
 function tmlTitle(data) {
 
     let scriptInfo = {
         author: `Min`,
         blog: `https://pang2h.tistory.com?tmlTitle`,
-        git: `https://github.com/mijien0179/tmlTitle.js`
+        git: `https://github.com/mijien0179/tmlTitle.js`,
+        release: `v19.12.30.`
     }
+
+    console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트 (${scriptInfo.release})\n` +
+        `개발자블로그 : ${scriptInfo.blog}\n` +
+        `Git 주소: ${scriptInfo.git}\n\n` +
+        `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
+        `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.`);
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
@@ -89,15 +95,15 @@ function tmlTitle(data) {
             };
             for (let i = 1; i < data.contentQuery.length; ++i) {
                 pDoc = document.querySelectorAll(`${data.contentQuery[i]} > p`);
-                if (tpDoc.size < pDoc.length){
+                if (tpDoc.size < pDoc.length) {
                     tpDoc.query = data.contentQuery[i];
                     tpDoc.size = pDoc.length;
                 }
             }
             data.contentQuery = tpDoc.query;
             pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
-            data.trigger = data.trigger || '# index';
-            if (pDoc[pDoc.length - 1].innerHTML.toLowerCase() != data.trigger) return;
+            data.trigger = (data.trigger || '# index').trim();
+            if (pDoc[pDoc.length - 1].innerText.toLowerCase().trim() != data.trigger) return;
             else pDoc[pDoc.length - 1].remove();
         }
 
@@ -121,7 +127,7 @@ function tmlTitle(data) {
                 }
                 nod.push({
                     id: idValue,
-                    text: curTag.innerHTML
+                    text: curTag.innerText.trim()
                 });
             }
             curTag = curTag.nextElementSibling;
@@ -144,13 +150,13 @@ function tmlTitle(data) {
     }
 
     if (data.tagIndexor) {
+        if (!("contentQuery" in data.tagIndexor)) {
+            console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
+            return;
+        }
         tagIndexor(data.tagIndexor);
     }
 
-    console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트\n` +
-        `개발자블로그 : ${scriptInfo.blog}\n` +
-        `Git 주소: ${scriptInfo.git}\n\n` +
-        `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제를 제한합니다.\n` +
-        `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.`);
+
 
 }
