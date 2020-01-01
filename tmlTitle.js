@@ -10,7 +10,21 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com?tmlTitle`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v19.12.30.`
+        release: `v19.12.30.`,
+        makerCode: function(isCode = true){
+            let p = document.createElement('p');
+            p.style.fontSize = `12px`;
+            p.style.textAlign = `right`;
+            p.innerHTML = `<a href="${scriptInfo.blog}" target="_blank" style="text-decoration:none; color:#3495eb">Script from F.R.I.D.A.Y</a>`
+            if(isCode) return p.outerHTML;
+            else return p;
+        }
+    }
+
+    var tools = {
+        escapeRegExp:function(string){
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
     }
 
     console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트 (${scriptInfo.release})\n` +
@@ -18,6 +32,8 @@ function tmlTitle(data) {
         `Git 주소: ${scriptInfo.git}\n\n` +
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
         `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.`);
+    
+    if (document.body.id != 'tt-body-page') return;
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
@@ -87,7 +103,6 @@ function tmlTitle(data) {
 
     function tagIndexor(data) {
         {   // indexor creatable
-            if (document.body.id != 'tt-body-page') return;
             let pDoc;
             let tpDoc = {
                 query: data.contentQuery[0],
@@ -138,11 +153,33 @@ function tmlTitle(data) {
         for (let i = 0; i < nod.length; ++i) {
             ret += `<li><a href="#${nod[i].id}">${nod[i].text}</a></li>`;
         }
-        ret += `${orderIndexor.close}</div>`;
+        ret += `${orderIndexor.close}${scriptInfo.makerCode()}</div>`;
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
         curTag.outerHTML += ret + curTag.outerHTML;
 
+    }
+    
+    function footNote(data){
+        {   // footNote creatable
+            let pDoc;
+            let tpDoc = {
+                query: data.contentQuery[0],
+                size: document.querySelectorAll(`${data.contentQuery[0]} > p`).length
+            };
+            for (let i = 1; i < data.contentQuery.length; ++i) {
+                pDoc = document.querySelectorAll(`${data.contentQuery[i]} > p`);
+                if (tpDoc.size < pDoc.length) {
+                    tpDoc.query = data.contentQuery[i];
+                    tpDoc.size = pDoc.length;
+                }
+            }
+            data.contentQuery = tpDoc.query;
+            pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
+        }
+        data.trigger = data.trigger || ' ';
+        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)} (.*)\\]`, `gi`);
+        
     }
 
     if (data.moreLessChanger) {
@@ -157,6 +194,12 @@ function tmlTitle(data) {
         tagIndexor(data.tagIndexor);
     }
 
-
+    if(data.footNote){
+        if(!(`contentQuery` in data.footNote)){
+            console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
+            return;
+        }
+        footNote(data.footNote);
+    }
 
 }
