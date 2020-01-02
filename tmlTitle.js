@@ -161,8 +161,8 @@ function tmlTitle(data) {
     }
     
     function footNote(data){
+        let pDoc;
         {   // footNote creatable
-            let pDoc;
             let tpDoc = {
                 query: data.contentQuery[0],
                 size: document.querySelectorAll(`${data.contentQuery[0]} > p`).length
@@ -175,11 +175,13 @@ function tmlTitle(data) {
                 }
             }
             data.contentQuery = tpDoc.query;
-            pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
         }
-        data.trigger = data.trigger || ' ';
-        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)} (.*)\\]`, `gi`);
-        
+        pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
+        data.trigger = data.trigger || '#';
+        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}(.*) (.*)\\]`, `gi`);
+        for(let i = 0 ; i < pDoc.length; ++i){
+            pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" alt="">test</span>`);
+        }
     }
 
     if (data.moreLessChanger) {
