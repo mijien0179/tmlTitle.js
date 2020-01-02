@@ -10,7 +10,15 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com?tmlTitle`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v19.12.30.`
+        release: `v19.12.30.`,
+        makerCode: function(isCode = true){
+            let p = document.createElement('p');
+            p.style.fontSize = `12px`;
+            p.style.textAlign = `right`;
+            p.innerHTML = `<a href="${scriptInfo.blog}" target="_blank" style="text-decoration:none; color:#3495eb">Script from F.R.I.D.A.Y</a>`
+            if(isCode) return p.outerHTML;
+            else return p;
+        }
     }
 
     console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트 (${scriptInfo.release})\n` +
@@ -138,7 +146,7 @@ function tmlTitle(data) {
         for (let i = 0; i < nod.length; ++i) {
             ret += `<li><a href="#${nod[i].id}">${nod[i].text}</a></li>`;
         }
-        ret += `${orderIndexor.close}</div>`;
+        ret += `${orderIndexor.close}${scriptInfo.makerCode()}</div>`;
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
         curTag.outerHTML += ret + curTag.outerHTML;
