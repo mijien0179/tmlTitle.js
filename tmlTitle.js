@@ -142,7 +142,10 @@ function tmlTitle(data) {
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
         curTag.outerHTML += ret + curTag.outerHTML;
-
+        let curURL = location.href.toString();
+        if((curURL = curURL.indexOf('#')) != -1){
+            location.href = location.href;
+        }
     }
 
     if (data.moreLessChanger) {
