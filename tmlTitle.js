@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com?tmlTitle`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v19.12.30.`,
+        release: `v20.01.03.`,
         makerCode: function (isCode = true) {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -102,6 +102,12 @@ function tmlTitle(data) {
     }
 
     function tagIndexor(data) {
+        let base = {
+            mainFrame:{
+                id:`tmlTitle-tagIndexor`,
+            }
+        };
+
         {   // indexor creatable
             let pDoc;
             let tpDoc = {
@@ -151,7 +157,7 @@ function tmlTitle(data) {
             curTag = curTag.nextElementSibling;
         }
         if (nod == []) return;
-        let ret = `<div id="tmlTitle-tagIndexor"><${data.indexorTitleTag}>${data.indexorTitle}</${data.indexorTitleTag}>`;
+        let ret = `<div id="${base.mainFrame.id}"><${data.indexorTitleTag}>${data.indexorTitle}</${data.indexorTitleTag}>`;
         ret += `${orderIndexor.open}`
         for (let i = 0; i < nod.length; ++i) {
             ret += `<li><a href="#${nod[i].id}">${nod[i].text}</a></li>`;
@@ -161,33 +167,17 @@ function tmlTitle(data) {
 
         curTag.outerHTML += ret + curTag.outerHTML;
         let curURL = location.href.toString();
-        if ((curURL = curURL.indexOf('#')) != -1) {
-            location.href = location.href;
+        let curLoc = -1;
+        if ((curLoc = curURL.indexOf('#')) != -1) {
+            let c = document.querySelector(`${curURL.substr(curLoc)}`);
+            if(c != null) c.scrollIntoView({behavior:data.scrollType});
         }
     }
 
-    function footNote(data) {
-        let pDoc;
-        {   // footNote creatable
-            let tpDoc = {
-                query: data.contentQuery[0],
-                size: document.querySelectorAll(`${data.contentQuery[0]} > p`).length
-            };
-            for (let i = 1; i < data.contentQuery.length; ++i) {
-                pDoc = document.querySelectorAll(`${data.contentQuery[i]} > p`);
-                if (tpDoc.size < pDoc.length) {
-                    tpDoc.query = data.contentQuery[i];
-                    tpDoc.size = pDoc.length;
-                }
-            }
-            data.contentQuery = tpDoc.query;
-        }
-        pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
-        data.trigger = data.trigger || '#';
-        let reg = new RegExp(`(\\[${tools.escapeRegExp(data.trigger)}(.*) (.*)\\])`, `gi`);
-        for (let i = 0; i < pDoc.length; ++i) {
-            pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" alt="">test</span>`);
-        }
+    function ogHrefer(data){
+        document.querySelectorAll(`a[data-source-url]`).forEach(v => {
+            v.href = v.getAttribute(`data-source-url`);
+        });
     }
 
     if (data.moreLessChanger) {
@@ -208,6 +198,10 @@ function tmlTitle(data) {
             return;
         }
         footNote(data.footNote);
+    }
+
+    if (data.ogHrefer){
+        ogHrefer(data.ogHrefer);
     }
 
 }
