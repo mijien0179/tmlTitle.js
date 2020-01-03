@@ -192,14 +192,6 @@ function tmlTitle(data) {
         tagIndexor(data.tagIndexor);
     }
 
-    if (data.footNote) {
-        if (!(`contentQuery` in data.footNote)) {
-            console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
-            return;
-        }
-        footNote(data.footNote);
-    }
-
     if (data.ogHrefer){
         ogHrefer(data.ogHrefer);
     }
