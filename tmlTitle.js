@@ -11,18 +11,18 @@ function tmlTitle(data) {
         blog: `https://pang2h.tistory.com?tmlTitle`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
         release: `v19.12.30.`,
-        makerCode: function(isCode = true){
+        makerCode: function (isCode = true) {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
             p.style.textAlign = `right`;
             p.innerHTML = `<a href="${scriptInfo.blog}" target="_blank" style="text-decoration:none; color:#3495eb">Script from F.R.I.D.A.Y</a>`
-            if(isCode) return p.outerHTML;
+            if (isCode) return p.outerHTML;
             else return p;
         }
     }
 
     var tools = {
-        escapeRegExp:function(string){
+        escapeRegExp: function (string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
     }
@@ -32,7 +32,7 @@ function tmlTitle(data) {
         `Git 주소: ${scriptInfo.git}\n\n` +
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
         `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.`);
-    
+
     if (document.body.id != 'tt-body-page') return;
 
     function moreLessChanger(data) {
@@ -144,6 +144,9 @@ function tmlTitle(data) {
                     id: idValue,
                     text: curTag.innerText.trim()
                 });
+                if (data.showReverseBtn) {
+                    curTag.innerHTML += `<span class="tmlTitle-indexor-go"><a href="#tmlTitle-tagIndexor" title="${data.indexorTitle}로 이동">∧</a></span>`;
+                }
             }
             curTag = curTag.nextElementSibling;
         }
@@ -159,8 +162,8 @@ function tmlTitle(data) {
         curTag.outerHTML += ret + curTag.outerHTML;
 
     }
-    
-    function footNote(data){
+
+    function footNote(data) {
         let pDoc;
         {   // footNote creatable
             let tpDoc = {
@@ -178,8 +181,8 @@ function tmlTitle(data) {
         }
         pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
         data.trigger = data.trigger || '#';
-        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}(.*) (.*)\\]`, `gi`);
-        for(let i = 0 ; i < pDoc.length; ++i){
+        let reg = new RegExp(`(\\[${tools.escapeRegExp(data.trigger)}(.*) (.*)\\])`, `gi`);
+        for (let i = 0; i < pDoc.length; ++i) {
             pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" alt="">test</span>`);
         }
     }
@@ -196,8 +199,8 @@ function tmlTitle(data) {
         tagIndexor(data.tagIndexor);
     }
 
-    if(data.footNote){
-        if(!(`contentQuery` in data.footNote)){
+    if (data.footNote) {
+        if (!(`contentQuery` in data.footNote)) {
             console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
             return;
         }
