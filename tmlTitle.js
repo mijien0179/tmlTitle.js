@@ -181,10 +181,17 @@ function tmlTitle(data) {
         }
         pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
         data.trigger = data.trigger || '#';
-        let reg = new RegExp(`(\\[${tools.escapeRegExp(data.trigger)}(.*) (.*)\\])`, `gi`);
+        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\]]*) ([^\\]]*)\\]`);
+        let nod = [];
         for (let i = 0; i < pDoc.length; ++i) {
-            pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" alt="">test</span>`);
-        }
+            let regTemp;
+            while(regTemp = reg.exec(pDoc[i].innerHTML)){
+                nod.push({
+                  title:regTemp[1],
+                  text:regTemp[2]  
+                });
+            }
+       }
     }
 
     if (data.moreLessChanger) {
