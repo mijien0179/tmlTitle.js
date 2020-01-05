@@ -27,6 +27,12 @@ function tmlTitle(data) {
         escapeRegExp: function (string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         },
+        encodeHTML: function (string){
+            return encodeURI(string);
+        },
+        decodeHTML: function(string){
+            return decodeURI(string);
+        },
         alert: function(title, text, loader){
             let outside = document.createElement(`div`);
             let inside = document.createElement(`div`);
@@ -42,17 +48,24 @@ function tmlTitle(data) {
                 outside.style = `width:100%;height:100%; background:rgba(0,0,0,0.2); position:fixed; top:0; left:0; z-index:999; overflow-y:auto; padding:15px`;
                 inside.style = `width:50%; max-width:620px; scroll:vertical; background:#FFFFFF; box-shadow:0 0 10px rgba(0,0,0,0.1); border-radius:2px; padding:15px; margin:0 auto; transform:translate(-50%, -50%); left:50%; top:20%; position:absolute;`;
                 eTitle.style = `font-size:1.25em; width:100%`;
+                eText.style = `width:100%;word-break:break-all;`;
             }
             eTitle.innerText = title;
 
-            eText.innerText = text;
-
+            eText.innerHTML = text;
+            eText.querySelectorAll(`a`).forEach(element => {
+                element.setAttribute(`target`, `_blank`);
+            });
+            
             inside.appendChild(eTitle);
             inside.appendChild(eText);
             inside.appendChild(scriptInfo.makerCode(false, loader));
             outside.appendChild(inside);
             document.body.appendChild(outside);
-            outside.addEventListener('click', function(){
+            inside.addEventListener('click', function(e){
+                e.stopPropagation();
+            });
+            outside.addEventListener('click', function(e){
                 outside.remove();
             });
         }
@@ -245,7 +258,7 @@ function tmlTitle(data) {
                     title: regTemp[1],
                     text: regTemp[2]
                 });
-                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" title="${regTemp[2]}">${regTemp[1]}</sup></span>`);
+                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" title="${tools.encodeHTML(regTemp[2])}">${regTemp[1]}</sup></span>`);
                 count++;
             }
         }
@@ -253,7 +266,7 @@ function tmlTitle(data) {
         let ftItem = document.querySelectorAll(`${data.contentQuery} > p .tmlTitle-footNote > sup`);
         for(let i = 0 ; i < ftItem.length;++i){
             ftItem[i].addEventListener("click", function(){
-                tools.alert(ftItem[i].innerText, ftItem[i].title, `footnote`);
+                tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].title), `footnote`);
             });
         }
 
