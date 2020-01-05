@@ -11,7 +11,7 @@ function tmlTitle(data) {
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
         release: `v20.01.05.`,
-        makerCode: function (isCode = true) {
+        makerCode: function (isCode = true, loader ='') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
             p.style.textAlign = `right`;
@@ -193,7 +193,7 @@ function tmlTitle(data) {
         for (let i = 0; i < nod.length; ++i) {
             ret += `<li><a href="#${nod[i].id}">${nod[i].text}</a></li>`;
         }
-        ret += `${orderIndexor.close}${scriptInfo.makerCode()}</div>`;
+        ret += `${orderIndexor.close}${scriptInfo.makerCode(true, `tagIndexor`)}</div>`;
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
         curTag.outerHTML += ret + curTag.outerHTML;
