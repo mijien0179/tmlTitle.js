@@ -8,22 +8,53 @@ function tmlTitle(data) {
 
     let scriptInfo = {
         author: `Min`,
-        blog: `https://pang2h.tistory.com?tmlTitle`,
+        blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.01.03.`,
+        release: `v20.01.05.`,
         makerCode: function (isCode = true) {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
             p.style.textAlign = `right`;
-            p.innerHTML = `<a href="${scriptInfo.blog}" target="_blank" style="text-decoration:none; color:#3495eb">Script from F.R.I.D.A.Y</a>`
+            p.innerHTML = `<a href="${scriptInfo.blog}?${loader}" target="_blank" style="text-decoration:none; color:#3495eb">Script from F.R.I.D.A.Y</a>`
             if (isCode) return p.outerHTML;
             else return p;
         }
     }
 
+    data.selfDesign = data.selfDesign || null;
+
     var tools = {
         escapeRegExp: function (string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        },
+        alert: function(title, text, loader){
+            let outside = document.createElement(`div`);
+            let inside = document.createElement(`div`);
+            let eTitle = document.createElement(`p`);
+            let eText = document.createElement(`p`);
+            
+            if(data.selfDesign && data.selfDesign.alert){
+                outside.style = data.selfDesign.alert.background;
+                inside.style = data.selfDesign.alert.foreground;
+                eTitle.style = data.selfDesign.alert.title;
+                eText.style = data.selfDesign.alert.content;
+            }else{
+                outside.style = `width:100%;height:100%; background:rgba(0,0,0,0.2); position:fixed; top:0; left:0; z-index:999; overflow-y:auto; padding:15px`;
+                inside.style = `width:50%; max-width:620px; scroll:vertical; background:#FFFFFF; box-shadow:0 0 10px rgba(0,0,0,0.1); border-radius:2px; padding:15px; margin:0 auto; transform:translate(-50%, -50%); left:50%; top:20%; position:absolute;`;
+                eTitle.style = `font-size:1.25em; width:100%`;
+            }
+            eTitle.innerText = title;
+
+            eText.innerText = text;
+
+            inside.appendChild(eTitle);
+            inside.appendChild(eText);
+            inside.appendChild(scriptInfo.makerCode(false, loader));
+            outside.appendChild(inside);
+            document.body.appendChild(outside);
+            outside.addEventListener('click', function(){
+                outside.remove();
+            });
         }
     }
 
@@ -174,10 +205,68 @@ function tmlTitle(data) {
         }
     }
 
+<<<<<<< HEAD
     function ogHrefer(data){
         document.querySelectorAll(`a[data-source-url]`).forEach(v => {
             v.href = v.getAttribute(`data-source-url`);
         });
+=======
+    function footNote(data) {
+        let pDoc;
+        {   // footNote creatable
+            let tpDoc = {
+                query: data.contentQuery[0],
+                size: document.querySelectorAll(`${data.contentQuery[0]} > p`).length
+            };
+            for (let i = 1; i < data.contentQuery.length; ++i) {
+                pDoc = document.querySelectorAll(`${data.contentQuery[i]} > p`);
+                if (tpDoc.size < pDoc.length) {
+                    tpDoc.query = data.contentQuery[i];
+                    tpDoc.size = pDoc.length;
+                }
+            }
+            data.contentQuery = tpDoc.query;
+        }
+        data.cursor = data.cursor || `pointer`;
+        data.color = data.color || `#209dd4`;
+        data.titleTag = data.titleTag || `h3`;
+        pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
+        data.trigger = data.trigger || '#';
+        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
+        let nod = [];
+        let count = 1;
+        for (let i = 0; i < pDoc.length; ++i) {
+            let regTemp;
+            while (regTemp = reg.exec(pDoc[i].innerHTML)) {
+                if (regTemp[1].trim() == '') {
+                    regTemp[1] = count;
+                }
+                nod.push({
+                    title: regTemp[1],
+                    text: regTemp[2]
+                });
+                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" title="${regTemp[2]}">${regTemp[1]}</sup></span>`);
+                count++;
+            }
+        }
+        
+        let ftItem = document.querySelectorAll(`${data.contentQuery} > p .tmlTitle-footNote > sup`);
+        for(let i = 0 ; i < ftItem.length;++i){
+            ftItem[i].addEventListener("click", function(){
+                tools.alert(ftItem[i].innerText, ftItem[i].title, `footnote`);
+            });
+        }
+
+        if (data.showIntoBottom) {
+            let btmFT = `<div class="tmlTitle-footNote-btmArea"><${data.titleTag}>주석</${data.titleTag}>`;
+            for (let i = 0; i < nod.length; ++i) {
+                btmFT += `<p class="tmlTitle-footNote-btmArea-content"><a href="#tmlTitle-footNoteOri-${i}">${nod[i].title}</a> : ${nod[i].text}</p>`;
+            }
+            btmFT += `</div>`;
+            pDoc[pDoc.length - 1].outerHTML += btmFT;
+            
+        }
+>>>>>>> footnote
     }
 
     if (data.moreLessChanger) {
