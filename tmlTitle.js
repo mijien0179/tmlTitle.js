@@ -205,12 +205,12 @@ function tmlTitle(data) {
         }
     }
 
-<<<<<<< HEAD
     function ogHrefer(data){
         document.querySelectorAll(`a[data-source-url]`).forEach(v => {
             v.href = v.getAttribute(`data-source-url`);
         });
-=======
+    }
+
     function footNote(data) {
         let pDoc;
         {   // footNote creatable
@@ -266,11 +266,14 @@ function tmlTitle(data) {
             pDoc[pDoc.length - 1].outerHTML += btmFT;
             
         }
->>>>>>> footnote
     }
 
     if (data.moreLessChanger) {
         moreLessChanger(data.moreLessChanger);
+    }
+
+    if (data.ogHrefer){
+        ogHrefer(data.ogHrefer);
     }
 
     if (data.tagIndexor) {
@@ -281,8 +284,11 @@ function tmlTitle(data) {
         tagIndexor(data.tagIndexor);
     }
 
-    if (data.ogHrefer){
-        ogHrefer(data.ogHrefer);
+    if(data.footNote){
+        if(!(`contentQuery` in data.footNote)){
+            console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
+            return;
+        }
+        footNote(data.footNote);
     }
-
 }
