@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.01.05.`,
+        release: `v20.01.06.`,
         makerCode: function (isCode = true, loader ='') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -229,10 +229,10 @@ function tmlTitle(data) {
         {   // footNote creatable
             let tpDoc = {
                 query: data.contentQuery[0],
-                size: document.querySelectorAll(`${data.contentQuery[0]} > p`).length
+                size: document.querySelectorAll(`${data.contentQuery[0]} p, ${data.contentQuery[0]} li`).length
             };
             for (let i = 1; i < data.contentQuery.length; ++i) {
-                pDoc = document.querySelectorAll(`${data.contentQuery[i]} > p`);
+                pDoc = document.querySelectorAll(`${data.contentQuery[i]} p, ${data.contentQuery[i]} li`);
                 if (tpDoc.size < pDoc.length) {
                     tpDoc.query = data.contentQuery[i];
                     tpDoc.size = pDoc.length;
@@ -243,7 +243,7 @@ function tmlTitle(data) {
         data.cursor = data.cursor || `pointer`;
         data.color = data.color || `#209dd4`;
         data.titleTag = data.titleTag || `h3`;
-        pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
+        pDoc = document.querySelectorAll(`${data.contentQuery} p, ${data.contentQuery} li`);
         data.trigger = data.trigger || '#';
         let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
         let nod = [];
@@ -258,15 +258,15 @@ function tmlTitle(data) {
                     title: regTemp[1],
                     text: regTemp[2]
                 });
-                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" title="${tools.encodeHTML(regTemp[2])}">${regTemp[1]}</sup></span>`);
+                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" value="${tools.encodeHTML(regTemp[2])}">${regTemp[1]}</sup></span>`);
                 count++;
             }
         }
         
-        let ftItem = document.querySelectorAll(`${data.contentQuery} > p .tmlTitle-footNote > sup`);
+        let ftItem = document.querySelectorAll(`${data.contentQuery} .tmlTitle-footNote > sup`);
         for(let i = 0 ; i < ftItem.length;++i){
             ftItem[i].addEventListener("click", function(){
-                tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].title), `footnote`);
+                tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].getAttribute(`value`)), `footnote`);
             });
         }
 
