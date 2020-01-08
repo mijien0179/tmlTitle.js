@@ -33,7 +33,7 @@ function tmlTitle(data) {
         decodeHTML: function(string){
             return decodeURI(string);
         },
-        alert: function(title, text, loader){
+        alert: function(title, text, loader, parent = document.body){
             let outside = document.createElement(`div`);
             let inside = document.createElement(`div`);
             let eTitle = document.createElement(`p`);
@@ -61,7 +61,7 @@ function tmlTitle(data) {
             inside.appendChild(eText);
             inside.appendChild(scriptInfo.makerCode(false, loader));
             outside.appendChild(inside);
-            document.body.appendChild(outside);
+            parent.appendChild(outside);
             inside.addEventListener('click', function(e){
                 e.stopPropagation();
             });
@@ -266,7 +266,7 @@ function tmlTitle(data) {
         let ftItem = document.querySelectorAll(`${data.contentQuery} .tmlTitle-footNote > sup`);
         for(let i = 0 ; i < ftItem.length;++i){
             ftItem[i].addEventListener("click", function(){
-                tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].getAttribute(`value`)), `footnote`);
+                tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].getAttribute(`value`)), `footnote`, document.querySelector(data.contentQuery));
             });
         }
 
