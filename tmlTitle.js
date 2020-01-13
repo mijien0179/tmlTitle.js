@@ -151,7 +151,8 @@ function tmlTitle(data) {
                 id:`tmlTitle-tagIndexor`,
                 title:data.indexorTitle || 'Index',
                 tag:data.indexorTitleTag || 'h3'
-            }
+            },
+            targetProp:`tmlTitle-idx-target`
         };
 
         {   // indexor creatable
@@ -199,7 +200,7 @@ function tmlTitle(data) {
                     text: curTag.innerText.trim()
                 });
                 if (data.showReverseBtn) {
-                    curTag.innerHTML += `<span class="tmlTitle-indexor-mainFrame" target="#${base.mainFrame.title}" title="${base.mainFrame.title}로 이동">∧</span>`;
+                    curTag.innerHTML += `<span class="tmlTitle-indexor-mainFrame" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
                 }
             }
             curTag = curTag.nextElementSibling;
@@ -208,16 +209,18 @@ function tmlTitle(data) {
         let ret = `<div id="${base.mainFrame.id}"><${base.mainFrame.tag}>${base.mainFrame.title}</${base.mainFrame.tag}>`;
         ret += `${orderIndexor.open}`
         for (let i = 0; i < nod.length; ++i) {
-            ret += `<li target="#${nod[i].id}">${nod[i].text}</li>`;
+            ret += `<li ${base.targetProp}="#${nod[i].id}">${nod[i].text}</li>`;
         }
         ret += `${orderIndexor.close}${scriptInfo.makerCode(true, `tagIndexor`)}</div>`;
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
-        document.querySelectorAll(`span[target='#${base.mainFrame.title}']`).forEach.addEventListener('click', function(e){
-            
-        });
-
+        
         curTag.outerHTML += ret + curTag.outerHTML;
+        document.querySelectorAll(`[${base.targetProp}]`).forEach(element => {
+            element.addEventListener('click', function(e){
+                scrollMove(element.getAttribute(`${base.targetProp}`), data.scrollType);
+            });
+        });
         let curURL = location.href.toString();
         let curLoc = -1;
         if ((curLoc = curURL.indexOf('#')) != -1) {
