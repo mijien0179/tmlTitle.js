@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.01.16.`,
+        release: `v20.01.17.`,
         makerCode: function (isCode = true, loader ='') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -243,7 +243,11 @@ function tmlTitle(data) {
         data.cursor = data.cursor || `pointer`;
         data.color = data.color || `#209dd4`;
         data.titleTag = data.titleTag || `h3`;
-        pDoc = document.querySelectorAll(`${data.contentQuery} p, ${data.contentQuery} li`);
+        pDoc = '';
+        ['p', 'li', 'h3'].forEach(element =>{
+            pDoc += data.contentQuery + ' ' + element;
+        });
+        pDoc = pDoc.substring(0,pDoc.length-1);
         data.trigger = data.trigger || '#';
         let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
         let nod = [];
