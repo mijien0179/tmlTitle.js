@@ -245,9 +245,10 @@ function tmlTitle(data) {
         data.titleTag = data.titleTag || `h3`;
         pDoc = '';
         ['p', 'li', 'h3'].forEach(element =>{
-            pDoc += data.contentQuery + ' ' + element;
+            pDoc += `${data.contentQuery} ${element},`;
         });
         pDoc = pDoc.substring(0,pDoc.length-1);
+        pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
         let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
         let nod = [];
@@ -262,7 +263,7 @@ function tmlTitle(data) {
                     title: regTemp[1],
                     text: regTemp[2]
                 });
-                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" value="${tools.encodeHTML(regTemp[2].replace('\\n', '<br>'))}">${regTemp[1]}</sup></span>`);
+                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" value="${tools.encodeHTML(regTemp[2].replace('\\n', '<br>'))}">[${regTemp[1]}]</sup></span>`);
                 count++;
             }
         }
