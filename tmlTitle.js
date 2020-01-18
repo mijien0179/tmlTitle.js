@@ -149,7 +149,10 @@ function tmlTitle(data) {
         let base = {
             mainFrame:{
                 id:`tmlTitle-tagIndexor`,
-            }
+                title:data.indexorTitle || 'Index',
+                tag:data.indexorTitleTag || 'h3'
+            },
+            targetProp:`tmlTitle-idx-target`
         };
 
         {   // indexor creatable
@@ -171,11 +174,12 @@ function tmlTitle(data) {
             if (pDoc[pDoc.length - 1].innerText.toLowerCase().trim() != data.trigger) return;
             else pDoc[pDoc.length - 1].remove();
         }
-
+        function scrollMove(target, movetype){
+            let c = document.querySelector(target);
+            if(c != null) c.scrollIntoView({behavior:movetype});
+        }
         let curTag = document.querySelector(`${data.contentQuery} > hr`);
         let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-        data.indexorTitleTag = data.indexorTitleTag || 'h3';
-        data.indexorTitle = data.indexorTitle || 'Index';
         let orderIndexor = {
             open: data.orderIndex && `<ol>` || `<ul>`,
             close: data.orderIndex && `</ol>` || `</ul>`
@@ -185,6 +189,7 @@ function tmlTitle(data) {
             let curTagName = curTag.tagName.toLowerCase();
             if (indexorTagList.contains(curTagName)) {
                 let idValue = `tmlTitle-tagIndexor-${nod.length}`;
+                curTag.classList.add(`tmlTitle-indexor-item`);
                 if (curTag.id == '') {
                     curTag.id = idValue;
                 } else {
@@ -195,27 +200,34 @@ function tmlTitle(data) {
                     text: curTag.innerText.trim()
                 });
                 if (data.showReverseBtn) {
-                    curTag.innerHTML += `<span class="tmlTitle-indexor-go"><a href="#tmlTitle-tagIndexor" title="${data.indexorTitle}로 이동">∧</a></span>`;
+                    curTag.innerHTML += `<span class="tmlTitle-indexor-mainFrame" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
                 }
             }
             curTag = curTag.nextElementSibling;
         }
         if (nod == []) return;
-        let ret = `<div id="${base.mainFrame.id}"><${data.indexorTitleTag}>${data.indexorTitle}</${data.indexorTitleTag}>`;
+        let ret = `<div id="${base.mainFrame.id}"><${base.mainFrame.tag}>${base.mainFrame.title}</${base.mainFrame.tag}>`;
         ret += `${orderIndexor.open}`
         for (let i = 0; i < nod.length; ++i) {
-            ret += `<li><a href="#${nod[i].id}">${nod[i].text}</a></li>`;
+            ret += `<li ${base.targetProp}="#${nod[i].id}">${nod[i].text}</li>`;
         }
         ret += `${orderIndexor.close}${scriptInfo.makerCode(true, `tagIndexor`)}</div>`;
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
+        
         curTag.outerHTML += ret + curTag.outerHTML;
+        document.querySelectorAll(`[${base.targetProp}]`).forEach(element => {
+            element.addEventListener('click', function(e){
+                scrollMove(element.getAttribute(`${base.targetProp}`), data.scrollType);
+            });
+        });
         let curURL = location.href.toString();
         let curLoc = -1;
         if ((curLoc = curURL.indexOf('#')) != -1) {
             let c = document.querySelector(`${curURL.substr(curLoc)}`);
             if(c != null) c.scrollIntoView({behavior:data.scrollType});
         }
+        
     }
 
     function ogHrefer(data){
