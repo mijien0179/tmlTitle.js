@@ -19,6 +19,7 @@
 |indexorTitle				|String					|'Index'	|목차 제목							|
 |orderIndex					|Boolean				|false  	|목차 스타일(true:번호)				|
 |showReverseBtn             |Boolean				|false  	|목차로 이동하는 버튼 표시 여부     |
+|showCopyBtn                |Boolean				|false  	|단락 링크 복사 버튼 표시 여부      |
 
 ### 스크립트 적용 방법
 스크립트 적용은 [이 문서를 확인](readme.md#스크립트-적용-방법)하세요. 이 기능을 이용하기 위한 코드는 다음과 같습니다.
