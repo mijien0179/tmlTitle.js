@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.01.17.`,
+        release: `v20.01.19.`,
         makerCode: function (isCode = true, loader ='') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -33,7 +33,7 @@ function tmlTitle(data) {
         decodeHTML: function(string){
             return decodeURI(string);
         },
-        alert: function(title, text, loader, parent = document.body){
+        alert: function(title, text, loader = 'null', parent = document.body){
             let outside = document.createElement(`div`);
             let inside = document.createElement(`div`);
             let eTitle = document.createElement(`p`);
@@ -62,10 +62,10 @@ function tmlTitle(data) {
             inside.appendChild(scriptInfo.makerCode(false, loader));
             outside.appendChild(inside);
             parent.appendChild(outside);
-            inside.addEventListener('click', function(e){
+            inside.addEventListener('mousedown', function(e){
                 e.stopPropagation();
             });
-            outside.addEventListener('click', function(e){
+            outside.addEventListener('mousedown', function(e){
                 outside.remove();
             });
         }
@@ -199,9 +199,8 @@ function tmlTitle(data) {
                     id: idValue,
                     text: curTag.innerText.trim()
                 });
-                if (data.showReverseBtn) {
-                    curTag.innerHTML += `<span class="tmlTitle-indexor-mainFrame" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
-                }
+                if(data.showCopyBtn) curTag.innerHTML += `<span class="tmlTitle-idx-copyLink" target="${document.location.href}#${curTag.id}">copy</span>`
+                if (data.showReverseBtn) curTag.innerHTML += `<span class="tmlTitle-idx-go-mainFrame" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
             }
             curTag = curTag.nextElementSibling;
         }
@@ -220,6 +219,13 @@ function tmlTitle(data) {
             element.addEventListener('click', function(e){
                 scrollMove(element.getAttribute(`${base.targetProp}`), data.scrollType);
             });
+        });
+        document.querySelectorAll(`span.tmlTitle-idx-copyLink`).forEach(element =>{
+            element.addEventListener('click', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                tools.alert("단락 링크 복사",element.getAttribute('target'), 'indexor-linkCopy')
+            })
         });
         let curURL = location.href.toString();
         let curLoc = -1;
