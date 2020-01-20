@@ -312,19 +312,20 @@ function tmlTitle(data) {
         ogHrefer(data.ogHrefer);
     }
 
-    if (data.tagIndexor) {
-        if (!("contentQuery" in data.tagIndexor)) {
-            console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
-            return;
-        }
-        tagIndexor(data.tagIndexor);
-    }
-
+    
     if(data.footNote){
         if(!(`contentQuery` in data.footNote)){
             console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
             return;
         }
         footNote(data.footNote);
+    }
+    
+    if (data.tagIndexor) {
+        if (!("contentQuery" in data.tagIndexor)) {
+            console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
+            return;
+        }
+        tagIndexor(data.tagIndexor);
     }
 }
