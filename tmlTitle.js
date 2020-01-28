@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.01.19.`,
+        release: `v20.01.28.`,
         makerCode: function (isCode = true, loader ='') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -68,6 +68,21 @@ function tmlTitle(data) {
             outside.addEventListener('mousedown', function(e){
                 outside.remove();
             });
+        },
+        findArticleArea: function(target){
+            let ret;
+            let tpDoc = {
+                query: target[0],
+                size: document.querySelectorAll(`${target[0]} p, ${target[0]} li`).length
+            };
+            for(let i = 1; i < target.length;++i){
+                ret = document.querySelectorAll(`${target[i]} p, ${target[i]} li`).length;
+                if(tpDoc.size < ret.length){
+                    tpDoc.query = target[i];
+                    tpDoc.size = ret.length;
+                }
+            }
+            return tpDoc.query;
         }
     }
 
@@ -302,6 +317,40 @@ function tmlTitle(data) {
             pDoc[pDoc.length - 1].outerHTML += btmFT;
             
         }
+    }
+
+    function emojier(data){
+        data.contentQuery = tools.findArticleArea(data.contentQuery);
+
+        let query = '';
+        data.contentTag.forEach(tag => {
+            query += `${data.contentQuery} ${tag},`;
+        });
+
+        query = query.substring(0, query.length-1);
+
+        document.querySelectorAll(query).forEach(element =>{
+            [
+                {plain:[':)', ':]'], emo:'\u{1f642}'},
+                {plain:[':p',':b'], emo:'\u{1fb1b}'},
+                {plain:[':D'], emo:'\u{1f603}'},
+                {plain:[';)'], emo:'\u{1f609}'},
+                {plain:[';b', ';p'], emo:'\u{1f61c}'},
+                {plain:[':|'], emo:'\u{1f610}'},
+                {plain:[':(', ':['], emo:'\u{1f641}'},
+                {plain:[':O', ':o'], emo:'\u{1f62e}'},
+                {plain:[':O', ':o'], emo:'\u{1f62e}'}
+            ].forEach(item =>{
+                item.plain.forEach(value =>{
+                    element.innerHTML = element.innerHTML.split(value).join(item.emo);
+                });
+            });
+        });
+        
+    }
+
+    if(data.emojier){
+        emojier(data.emojier);
     }
 
     if (data.moreLessChanger) {
