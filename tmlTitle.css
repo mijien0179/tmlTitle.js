@@ -1,11 +1,11 @@
 [tmltitle-idx-target],
-.tmlTitle-idx-copyLink{
+.tmlTitle-idx-copylink{
     cursor:pointer;
     margin-left:0.3em;
     color:#008cff;
 }
-.tmlTitle-idx-copyLink,
-.tmlTitle-idx-go-mainFrame{
+.tmlTitle-idx-copylink,
+.tmlTitle-idx-go-mainframe{
     font-size:0.8em;
 
 }

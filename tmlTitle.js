@@ -10,8 +10,8 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.01.28.`,
-        makerCode: function (isCode = true, loader ='') {
+        release: `v20.01.31.`,
+        makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
             p.style.textAlign = `right`;
@@ -27,24 +27,24 @@ function tmlTitle(data) {
         escapeRegExp: function (string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         },
-        encodeHTML: function (string){
+        encodeHTML: function (string) {
             return encodeURI(string);
         },
-        decodeHTML: function(string){
+        decodeHTML: function (string) {
             return decodeURI(string);
         },
-        alert: function(title, text, loader = 'null', parent = document.body){
+        alert: function (title, text, loader = 'null', parent = document.body) {
             let outside = document.createElement(`div`);
             let inside = document.createElement(`div`);
             let eTitle = document.createElement(`p`);
             let eText = document.createElement(`p`);
-            
-            if(data.selfDesign && data.selfDesign.alert){
+
+            if (data.selfDesign && data.selfDesign.alert) {
                 outside.style = data.selfDesign.alert.background;
                 inside.style = data.selfDesign.alert.foreground;
                 eTitle.style = data.selfDesign.alert.title;
                 eText.style = data.selfDesign.alert.content;
-            }else{
+            } else {
                 outside.style = `width:100%;height:100%; background:rgba(0,0,0,0.2); position:fixed; top:0; left:0; z-index:999; overflow-y:auto; padding:15px`;
                 inside.style = `width:50%; max-width:620px; scroll:vertical; background:#FFFFFF; box-shadow:0 0 10px rgba(0,0,0,0.1); border-radius:2px; padding:15px; margin:0 auto; transform:translate(-50%, -50%); left:50%; top:20%; position:absolute;`;
                 eTitle.style = `font-size:1.25em; width:100%`;
@@ -52,32 +52,32 @@ function tmlTitle(data) {
             }
             eTitle.innerText = title;
 
-            eText.innerHTML = text;
+            eText.innerHTML = text.split('\n').join('<br>');
             eText.querySelectorAll(`a`).forEach(element => {
                 element.setAttribute(`target`, `_blank`);
             });
-            
+
             inside.appendChild(eTitle);
             inside.appendChild(eText);
             inside.appendChild(scriptInfo.makerCode(false, loader));
             outside.appendChild(inside);
             parent.appendChild(outside);
-            inside.addEventListener('mousedown', function(e){
+            inside.addEventListener('mousedown', function (e) {
                 e.stopPropagation();
             });
-            outside.addEventListener('mousedown', function(e){
+            outside.addEventListener('mousedown', function (e) {
                 outside.remove();
             });
         },
-        findArticleArea: function(target){
+        findArticleArea: function (target) {
             let ret;
             let tpDoc = {
                 query: target[0],
                 size: document.querySelectorAll(`${target[0]} p, ${target[0]} li`).length
             };
-            for(let i = 1; i < target.length;++i){
+            for (let i = 1; i < target.length; ++i) {
                 ret = document.querySelectorAll(`${target[i]} p, ${target[i]} li`).length;
-                if(tpDoc.size < ret.length){
+                if (tpDoc.size < ret.length) {
                     tpDoc.query = target[i];
                     tpDoc.size = ret.length;
                 }
@@ -92,7 +92,7 @@ function tmlTitle(data) {
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
         `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.`);
 
-    if (document.body.id != 'tt-body-page') return;
+    if (document.body.id != 'tt-body-page') return; // function stop, if this page is not Post page.
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
@@ -162,37 +162,34 @@ function tmlTitle(data) {
 
     function tagIndexor(data) {
         let base = {
-            mainFrame:{
-                id:`tmlTitle-tagIndexor`,
-                title:data.indexorTitle || 'Index',
-                tag:data.indexorTitleTag || 'h3'
+            mainFrame: {
+                id: `tmlTitle-tagIndexor`,
+                title: data.indexorTitle || 'Index',
+                tag: data.indexorTitleTag || 'h3'
             },
-            targetProp:`tmlTitle-idx-target`
+            copyBtn:{
+                class:'tmlTitle-idx-copylink',
+            },
+            revBtn:{
+                class:'tmlTitle-idx-go-mainframe'
+            },
+            targetProp: `tmlTitle-idx-target`
         };
 
         {   // indexor creatable
-            let pDoc;
-            let tpDoc = {
-                query: data.contentQuery[0],
-                size: document.querySelectorAll(`${data.contentQuery[0]} > p`).length
-            };
-            for (let i = 1; i < data.contentQuery.length; ++i) {
-                pDoc = document.querySelectorAll(`${data.contentQuery[i]} > p`);
-                if (tpDoc.size < pDoc.length) {
-                    tpDoc.query = data.contentQuery[i];
-                    tpDoc.size = pDoc.length;
-                }
-            }
-            data.contentQuery = tpDoc.query;
+            data.contentQuery = tools.findArticleArea(data.contentQuery);
+
             pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
             data.trigger = (data.trigger || '# index').trim();
             if (pDoc[pDoc.length - 1].innerText.toLowerCase().trim() != data.trigger) return;
             else pDoc[pDoc.length - 1].remove();
         }
-        function scrollMove(target, movetype){
+
+        function scrollMove(target, movetype) {
             let c = document.querySelector(target);
-            if(c != null) c.scrollIntoView({behavior:movetype});
+            if (c != null) c.scrollIntoView({ behavior: movetype });
         }
+
         let curTag = document.querySelector(`${data.contentQuery} > hr`);
         let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
         let orderIndexor = {
@@ -214,44 +211,54 @@ function tmlTitle(data) {
                     id: idValue,
                     text: curTag.innerText.trim()
                 });
-                if(data.showCopyBtn) curTag.innerHTML += `<span class="tmlTitle-idx-copyLink" target="${document.location.href}#${curTag.id}">copy</span>`
-                if (data.showReverseBtn) curTag.innerHTML += `<span class="tmlTitle-idx-go-mainFrame" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
+                if (data.showCopyBtn) curTag.innerHTML += `<span class="${base.copyBtn.class}" target="${document.location.href}#${curTag.id}">copy</span>`
+                if (data.showReverseBtn) curTag.innerHTML += `<span class="${base.revBtn.class}" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
             }
             curTag = curTag.nextElementSibling;
         }
         if (nod == []) return;
         let ret = `<div id="${base.mainFrame.id}"><${base.mainFrame.tag}>${base.mainFrame.title}</${base.mainFrame.tag}>`;
         ret += `${orderIndexor.open}`
-        for (let i = 0; i < nod.length; ++i) {
-            ret += `<li ${base.targetProp}="#${nod[i].id}">${nod[i].text}</li>`;
-        }
+        nod.forEach(element =>{
+            ret += `<li ${base.targetProp}="#${element.id}">${element.text}</li>`;
+        })
         ret += `${orderIndexor.close}${scriptInfo.makerCode(true, `tagIndexor`)}</div>`;
+
         curTag = document.querySelector(`${data.contentQuery} > hr`);
 
-        
         curTag.outerHTML += ret + curTag.outerHTML;
         document.querySelectorAll(`[${base.targetProp}]`).forEach(element => {
-            element.addEventListener('click', function(e){
+            element.addEventListener('click', function (e) {
                 scrollMove(element.getAttribute(`${base.targetProp}`), data.scrollType);
             });
         });
-        document.querySelectorAll(`span.tmlTitle-idx-copyLink`).forEach(element =>{
-            element.addEventListener('click', function(e){
+        document.querySelectorAll(`span.${base.copyBtn.class}`).forEach(element => {
+            element.addEventListener('click', function (e) {
+                let ta = document.createElement('textarea');
+                ta.value = element.getAttribute('target');
+                ta.style.display = 'null';
+                document.body.appendChild(ta);
+                ta.select();
+                ta.setSelectionRange(0, ta.value.length);
+                document.execCommand('copy');
+                document.body.removeChild(ta);
                 e.preventDefault();
                 e.stopPropagation();
-                tools.alert("단락 링크 복사",element.getAttribute('target'), 'indexor-linkCopy')
+                tools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.` + '\n\n'
+                                            + `참고: 일부 브라우저에서는 자동 복사가 제한될 수 있습니다.` + '\n'
+                                            + `필요시 아래 링크를 이용하세요.\n${element.getAttribute('target')}`, 'indexor-linkCopy')
             })
         });
         let curURL = location.href.toString();
         let curLoc = -1;
         if ((curLoc = curURL.indexOf('#')) != -1) {
             let c = document.querySelector(`${curURL.substr(curLoc)}`);
-            if(c != null) c.scrollIntoView({behavior:data.scrollType});
+            if (c != null) c.scrollIntoView({ behavior: data.scrollType });
         }
-        
+
     }
 
-    function ogHrefer(data){
+    function ogHrefer(data) {
         document.querySelectorAll(`a[data-source-url]`).forEach(v => {
             v.href = v.getAttribute(`data-source-url`);
         });
@@ -277,10 +284,10 @@ function tmlTitle(data) {
         data.color = data.color || `#209dd4`;
         data.titleTag = data.titleTag || `h3`;
         pDoc = '';
-        ['p', 'li', 'h3'].forEach(element =>{
+        ['p', 'li', 'h3'].forEach(element => {
             pDoc += `${data.contentQuery} ${element},`;
         });
-        pDoc = pDoc.substring(0,pDoc.length-1);
+        pDoc = pDoc.substring(0, pDoc.length - 1);
         pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
         let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
@@ -300,10 +307,10 @@ function tmlTitle(data) {
                 count++;
             }
         }
-        
+
         let ftItem = document.querySelectorAll(`${data.contentQuery} .tmlTitle-footNote > sup`);
-        for(let i = 0 ; i < ftItem.length;++i){
-            ftItem[i].addEventListener("click", function(){
+        for (let i = 0; i < ftItem.length; ++i) {
+            ftItem[i].addEventListener("click", function () {
                 tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].getAttribute(`value`)), `footnote`, document.querySelector(data.contentQuery));
             });
         }
@@ -315,11 +322,11 @@ function tmlTitle(data) {
             }
             btmFT += `</div>`;
             pDoc[pDoc.length - 1].outerHTML += btmFT;
-            
+
         }
     }
 
-    function emojier(data){ //proto type
+    function emojier(data) { //proto type
         data.contentQuery = tools.findArticleArea(data.contentQuery);
         data.contentTag = ['p', 'li'];
         let query = '';
@@ -327,28 +334,28 @@ function tmlTitle(data) {
             query += `${data.contentQuery} ${tag},`;
         });
 
-        query = query.substring(0, query.length-1);
+        query = query.substring(0, query.length - 1);
 
-        document.querySelectorAll(query).forEach(element =>{
+        document.querySelectorAll(query).forEach(element => {
             [
-                {plain:[':)', ':]'], emo:'😊'},
+                { plain: [':)', ':]'], emo: '😊' },
                 //{plain:[':p',':b'], emo:'\u{1fb1b}'},
-                {plain:[':D'], emo:'😃'},
-                {plain:[';)'], emo:'😉'},
-                {plain:[';b', ';p'], emo:'😜'},
-                {plain:[':|'], emo:'😐'},
-                {plain:[':(', ':['], emo:'😩'},
-                {plain:[':O', ':o'], emo:'😲'}
-            ].forEach(item =>{
-                item.plain.forEach(value =>{
+                { plain: [':D'], emo: '😃' },
+                { plain: [';)'], emo: '😉' },
+                { plain: [';b', ';p'], emo: '😜' },
+                { plain: [':|'], emo: '😐' },
+                { plain: [':(', ':['], emo: '😩' },
+                { plain: [':O', ':o'], emo: '😲' }
+            ].forEach(item => {
+                item.plain.forEach(value => {
                     element.innerHTML = element.innerHTML.split(value).join(item.emo);
                 });
             });
         });
-        
+
     }
 
-    if(data.emojier){
+    if (data.emojier) {
         console.log("tmlTitle emojier : proto type");
         emojier(data.emojier);
     }
@@ -357,19 +364,19 @@ function tmlTitle(data) {
         moreLessChanger(data.moreLessChanger);
     }
 
-    if (data.ogHrefer){
+    if (data.ogHrefer) {
         ogHrefer(data.ogHrefer);
     }
 
-    
-    if(data.footNote){
-        if(!(`contentQuery` in data.footNote)){
+
+    if (data.footNote) {
+        if (!(`contentQuery` in data.footNote)) {
             console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
             return;
         }
         footNote(data.footNote);
     }
-    
+
     if (data.tagIndexor) {
         if (!("contentQuery" in data.tagIndexor)) {
             console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
