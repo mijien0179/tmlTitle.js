@@ -319,9 +319,9 @@ function tmlTitle(data) {
         }
     }
 
-    function emojier(data){
+    function emojier(data){ //proto type
         data.contentQuery = tools.findArticleArea(data.contentQuery);
-
+        data.contentTag = ['p', 'li'];
         let query = '';
         data.contentTag.forEach(tag => {
             query += `${data.contentQuery} ${tag},`;
@@ -331,15 +331,14 @@ function tmlTitle(data) {
 
         document.querySelectorAll(query).forEach(element =>{
             [
-                {plain:[':)', ':]'], emo:'\u{1f642}'},
-                {plain:[':p',':b'], emo:'\u{1fb1b}'},
-                {plain:[':D'], emo:'\u{1f603}'},
-                {plain:[';)'], emo:'\u{1f609}'},
-                {plain:[';b', ';p'], emo:'\u{1f61c}'},
-                {plain:[':|'], emo:'\u{1f610}'},
-                {plain:[':(', ':['], emo:'\u{1f641}'},
-                {plain:[':O', ':o'], emo:'\u{1f62e}'},
-                {plain:[':O', ':o'], emo:'\u{1f62e}'}
+                {plain:[':)', ':]'], emo:'😊'},
+                //{plain:[':p',':b'], emo:'\u{1fb1b}'},
+                {plain:[':D'], emo:'😃'},
+                {plain:[';)'], emo:'😉'},
+                {plain:[';b', ';p'], emo:'😜'},
+                {plain:[':|'], emo:'😐'},
+                {plain:[':(', ':['], emo:'😩'},
+                {plain:[':O', ':o'], emo:'😲'}
             ].forEach(item =>{
                 item.plain.forEach(value =>{
                     element.innerHTML = element.innerHTML.split(value).join(item.emo);
@@ -350,6 +349,7 @@ function tmlTitle(data) {
     }
 
     if(data.emojier){
+        console.log("tmlTitle emojier : proto type");
         emojier(data.emojier);
     }
 
