@@ -11,15 +11,16 @@
 ### 구성 속성
 이 기능의 구성 속성은 다음과 같습니다. **굵게 표시된 속성은 필수 값입니다.**
 
-|속성 이름                  |데이터 타입            |기본값     |설명   							|
-|--------------------------:|:----------------------|:---------:|-----------------------------------|
-|**contentQuery**			|Array(String)			|-			|글의 시작을 담고 있는 태그 쿼리	|
-|trigger					|String                 |'# index'	|글의 목차를 만들지 결정하는 트리거	|
-|indexorTitleTag			|String					|'h3'		|목차 제목의 태그					|
-|indexorTitle				|String					|'Index'	|목차 제목							|
-|orderIndex					|Boolean				|false  	|목차 스타일(true:번호)				|
-|showReverseBtn             |Boolean				|false  	|목차로 이동하는 버튼 표시 여부     |
-|showCopyBtn                |Boolean				|false  	|단락 링크 복사 버튼 표시 여부      |
+|속성 이름                  |데이터 타입            |기본값     |설명   							            |
+|--------------------------:|:----------------------|:---------:|-----------------------------------------------|
+|**contentQuery**			|Array(String)			|-			|글의 시작을 담고 있는 태그 쿼리	            |
+|trigger					|String                 |'# index'	|글의 목차를 만들지 결정하는 트리거	            |
+|indexorTitleTag			|String					|'h3'		|목차 제목의 태그					            |
+|indexorTitle				|String					|'Index'	|목차 제목							            |
+|orderIndex					|Boolean				|false  	|목차 스타일(true:번호)				            |
+|showReverseBtn             |Boolean				|false  	|목차로 이동하는 버튼 표시 여부                 |
+|showCopyBtn                |Boolean				|false  	|단락 링크 복사 버튼 표시 여부                  |
+|scrollType                 |String 				|-          |이동할 때 스크롤 스타일(scrollIntoView 참고)   |
 
 ### 스크립트 적용 방법
 스크립트 적용은 [이 문서를 확인](readme.md#스크립트-적용-방법)하세요. 이 기능을 이용하기 위한 코드는 다음과 같습니다.
