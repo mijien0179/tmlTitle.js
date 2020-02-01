@@ -97,68 +97,102 @@ function tmlTitle(data) {
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
-
-        function close(parent, title) {
-            parent.classList.remove('open');
-            let btn = parent.querySelectorAll(`a.btn-toggle-moreless`);
-            for (let i = 0; i < btn.length; ++i) {
-                btn[i].innerText = title;
+        let base = {
+            default:{ // script default setting values
+                delTitleContent: data.delTitleContent === true,
+                prevWord: data.prevWord || '# ',
+                addButton: data.addButton === true,
+                defaultOpenTitle: data.defaultOpenTitle || '더보기',
+                defaultCloseTitle: data.defaultCloseTitle || '닫기'
+            },
+            doc:{ // moreLess doc info
+                tag:'div',
+                class:function(selector = true){
+                    let ret = 'moreless-content';
+                    if(selector === true) ret = `.${ret}`;
+                    return ret;
+                },
+                prop:{ // moreLess doc property
+                    more:'data-text-more',
+                    less:'data-text-less'
+                },
+                button:{ // moreLess open/clsoe button info
+                    tag:'a',
+                    class:function(selector = true){
+                        let ret = 'btn-toggle-moreless';
+                        if(selector === true) ret = `.${ret}`;
+                        return ret;
+                    }
+                },
+                extraButton:{
+                    class:function(selector = true){
+                        let ret = 'tmlTitle-extrabtn';
+                        if(selector === true) ret = `.${ret}`;
+                        return ret;
+                    }
+                }
             }
+        };
+
+        function close(parent) {
+            parent.classList.remove('open');
+            let btn = parent.querySelectorAll(`${base.doc.button.class()}`);
+            btn.forEach(element => {
+                element.innerText = parent.getAttribute(base.doc.prop.more);
+            });
             if (btn[1]) btn[1].style.display = 'none';
         }
 
-        function open(parent, title) {
+        function open(parent) {
             parent.classList.add('open');
-            let btn = parent.querySelectorAll(`a.btn-toggle-moreless`);
-            for (let i = 0; i < btn.length; ++i) {
-                btn[i].innerText = title;
-            }
+            let btn = parent.querySelectorAll(`${base.doc.button.class()}`);
+            btn.forEach(element =>{
+                element.innerText = parent.getAttribute(base.doc.prop.less);
+            });
             if (btn[1]) btn[1].style.display = null;
         }
+        
+        parent.forEach(element =>{
+            if (base.default.addButton === true) {
+                element.innerHTML += element.querySelector(`${base.doc.button.class()}`).outerHTML;
+                element.lastChild.classList.add(base.doc.extraButton.class(false));
+                element.lastChild.style.display = `none`;
+            }
+            let visBtn = element.querySelectorAll(`${base.doc.button.class()}`);
+            let content = element.querySelectorAll(`${base.doc.class()} *`);
+            
+            let openTitleItem = content[0].tagName == 'P' && content[0];
+            let closeTitleItem = content[content.length - 1].tagName == 'P' && content[content.length - 1];
 
-        for (let i = 0; i < parent.length; ++i) {
-            if (data.addButton === true) {
-                parent[i].innerHTML += parent[i].querySelector('a.btn-toggle-moreless').outerHTML;
-                parent[i].lastChild.classList.add('tmlTitle-extrabtn');
-                parent[i].lastChild.style.display = `none`;
+            let titleFindRegexp = new RegExp(`${tools.escapeRegExp(base.default.prevWord)}(.*)`);
+           
+            if(openTitleItem){
+                element.setAttribute(base.doc.prop.more, 
+                        titleFindRegexp.exec(openTitleItem.innerText)[1] || base.default.defaultOpenTitle);
+                if(base.default.delTitleContent === true) openTitleItem.remove();
             }
-            let visBtn = parent[i].querySelectorAll('a.btn-toggle-moreless');
-            let content = parent[i].querySelectorAll('div.moreless-content *');
-            let openTitleRaw = content[0].tagName == 'P' && content[0];
-            let closeTitleRaw = content[content.length - 1].tagName == 'P' && content[content.length - 1];
-            data.prevWord = data.prevWord || "# ";
-            let openTitle = data.defaultOpenTitle || `더보기`;
-            if (openTitleRaw && openTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord) {
-                openTitle = openTitleRaw.innerText.substr(data.prevWord.length);
-                parent[i].setAttribute('data-text-more', openTitle);
-                if (data.delTitleContent === true) {
-                    openTitleRaw.remove();
-                }
-            }
-            let closeTitle = data.defaultCloseTitle || `닫기`;
-            if (closeTitleRaw && closeTitleRaw.innerText.substr(0, data.prevWord.length) === data.prevWord) {
-                closeTitle = closeTitleRaw.innerText.substr(data.prevWord.length);
-                parent[i].setAttribute('data-text-less', closeTitle);
-                if (data.delTitleContent === true) {
-                    closeTitleRaw.remove();
-                }
+            
+            if(closeTitleItem){
+                element.setAttribute(base.doc.prop.less,
+                        titleFindRegexp.exec(clseTitleItem.innerText)[1] || base.default.defaultCloseTitle);
+                if(base.default.delTitleContent === true) closeTitleItem.remove();
             }
 
-            for (let c = 0; c < visBtn.length; ++c) {
-                visBtn[c].innerText = openTitle;
+            visBtn.forEach(visElement => {
+                visElement.innerText = element.getAttribute(base.doc.prop.more);
 
-                visBtn[c].addEventListener('click', function (e) {
+                visElement.addEventListener('click', function(e){
                     e.preventDefault();
-                    if (parent[i].classList.contains('open')) {
-                        close(parent[i], openTitle);
+                    if (element.classList.contains('open')) {
+                        close(element);
                     } else {
-                        open(parent[i], closeTitle);
+                        open(element);
                     }
                 });
+            });
 
-            }
+        });
 
-        }
     }
 
     function tagIndexor(data) {
