@@ -351,7 +351,7 @@ function tmlTitle(data) {
         }
 
         if (data.showIntoBottom) {
-            let btmFT = `<div class="tmlTitle-footNote-btmArea"><${data.titleTag}>주석</${data.titleTag}>`;
+            let btmFT = `<div class="tmlTitle-footNote-btmArea"><${data.titleTag}>각주</${data.titleTag}>`;
             for (let i = 0; i < nod.length; ++i) {
                 btmFT += `<p class="tmlTitle-footNote-btmArea-content"><a href="#tmlTitle-footNoteOri-${i}">${nod[i].title}</a> : ${nod[i].text}</p>`;
             }
