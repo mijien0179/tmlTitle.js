@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.01.`,
+        release: `v20.02.03.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -83,6 +83,21 @@ function tmlTitle(data) {
                 }
             }
             return tpDoc.query;
+        },
+        getNewElement: function (tag, propList) {
+            let element = document.createElement(tag);
+            for (let prop in propList) {
+                if (element.hasOwnProperty(prop)) {
+                    element.setAttribute(prop, propList[prop]);
+                }
+            }
+            return element;
+        },
+        getPostUrl: function () {
+            let reg = new RegExp(`(https?\:\/\/[^\/]*\/[^\?]*)`);
+            let ret = reg.exec(document.location.href);
+            if (ret) return ret[1];
+            return null;
         }
     }
 
@@ -224,7 +239,7 @@ function tmlTitle(data) {
                 }
             },
             idxList: {
-                tag:['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // Item order is priority
+                tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // Item order is priority
                 id: function (i) {
                     return `tmlTitle-tagIndexor-${i}`;
                 },
@@ -267,12 +282,62 @@ function tmlTitle(data) {
             if (c != null) c.scrollIntoView({ behavior: movetype });
         }
 
-        let curTag = document.querySelector(`${data.contentQuery} > hr`);
+        let hrList;
+        hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
+        let nod = [];
+        
+        function FindObjInParagraph(v, index) {
+            let ret = [];
+            do {
+                let tagIndex;
+                if (tagIndex = base.idxList.tag.indexOf(v.tagName.toLowerCase()) != -1) {
+                    v.classList.add(base.defaulot.idxList.class(false)); // for finding target after this working
+                    let idValue = base.idxList.id(index++);
 
-        while(curTag){
-            let tName = curTag.tagName.toLowerCase();
-            
+                    if (v.id == '') v.id = idValue; // id-value normalization, without tag that already has id value
+                    else idValue = v.id;
+
+                    ret.push({
+                        order: tagIndex,
+                        id: idValue,
+                        text: v.innerText.trim()
+                    });
+                    if (base.default.showCopyBtn === true) { // create button that copying url of this paragraph
+                        v.appendChild(tools.getNewElement('span', {
+                            class: base.copyBtn.class(false),
+                            target: `${tools.getPostUrl()}#${v.id}`
+                        }));
+                    }
+                    if (base.default.showReverseBtn === true) { // create button that going to index area
+                        v.appendChild(tools.getNewElement('span', {
+                            class: base.revBtn.class(false),
+                            [base.targetProp]: `#${base.mainFrame.id}`,
+                            title: `${base.mainFrame.title}로 이동`
+                        }));
+                    }
+                };
+            } while (v && v.tagName.toLowerCase() != 'hr');
+            return ret;
         }
+
+        let idIndex = 0;
+        hrList.forEach(element => {
+            nod.push(FindObjInParagraph(element, idIndex));
+            idIndex += nod[nod.length].length;
+        });
+        let idxHtml = '';
+        nod.forEach(arr => {
+            for (let i = 1; i < arr.length; ++i) {
+                if (arr[0].order <= arr[i].order) {
+
+                }
+            }
+        });
+
+
+
+
+
 
         let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
         let orderIndexor = {
