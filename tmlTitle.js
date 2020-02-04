@@ -10,7 +10,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.03.`,
+        release: `v20.02.04.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -84,13 +84,16 @@ function tmlTitle(data) {
             }
             return tpDoc.query;
         },
-        getNewElement: function (tag, propList) {
+        getNewElement: function (tag, propList, next = null) {
             let element = document.createElement(tag);
             for (let prop in propList) {
                 if (element.hasOwnProperty(prop)) {
                     element.setAttribute(prop, propList[prop]);
                 }
             }
+
+            if(next) next(element);
+
             return element;
         },
         getPostUrl: function () {
@@ -219,8 +222,10 @@ function tmlTitle(data) {
                 showCopyBtn: data.showCopyBtn || false,
                 scrollType: data.scrollType || null,
             },
+            headerField:{
+                id: 'tmlTitle-tagIndexor'
+            },
             header: {
-                id: 'tmlTitle-idx-list-header',
                 text: data.indexorTitle || 'Index',
                 tag: data.indexorTitleTag || 'h3'
             },
@@ -269,12 +274,13 @@ function tmlTitle(data) {
         };
 
         {   // indexor creatable
-            data.contentQuery = tools.findArticleArea(data.contentQuery);
+            data.contentQuery = tools.findArticleArea(data.contentQuery); // find article area
 
-            pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
-            let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`);
-            if (!reg.exec(pDoc[pDoc.length - 1].innerText)) return;
-            else pDoc[pDoc.length - 1].remove();
+            pDoc = document.querySelectorAll(`${data.contentQuery} > p`); // select article area element
+            
+            let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
+            if (!reg.exec(pDoc[pDoc.length - 1].innerText)) return; // escape this function, if trigger is not exists
+            else pDoc[pDoc.length - 1].remove(); // delete trigger tag, if this docum has trigger
         }
 
         function scrollMove(target, movetype) {
@@ -325,19 +331,35 @@ function tmlTitle(data) {
             nod.push(FindObjInParagraph(element, idIndex));
             idIndex += nod[nod.length].length;
         });
-        let idxHtml = '';
+        let idxGroup = {
+            baseTag:tools.getNewElement('div', {
+                id:base.headerField.id,
+            })
+        };
+        
+        idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.header.tag, null));
+        idxGroup.headerTag.innerText = base.header.text;
+        idxGroup.baseTag.appendChild(idxGroup.listTag = tools.getNewElement(base.default.orderIndex, null));
+        
+        let curLI = tools.getNewElement('li', )
+
         nod.forEach(arr => {
             for (let i = 1; i < arr.length; ++i) {
-                if (arr[0].order <= arr[i].order) {
-
-                }
+                if(arr[i].order <= arr[0].order)arr[i].order = 0;
+                else arr[i].order -= arr[0].order;
             }
+            arr[i].order = 0;
+
+
+
         });
 
 
+        let appendList = [hrList[0].cloneNode(true), idxGroup.baseTag];
 
-
-
+        appendList.forEach(element =>{
+            hrList[0].parent.insertBefore(element, hrList[0].nextElementSibling);
+        })
 
         let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
         let orderIndexor = {
