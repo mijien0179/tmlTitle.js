@@ -6,11 +6,15 @@
 */
 function tmlTitle(data) {
 
+    Array.prototype.top = function () {
+        return this[this.length - 1];
+    }
+
     let scriptInfo = {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.04.`,
+        release: `v20.02.06.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -87,12 +91,10 @@ function tmlTitle(data) {
         getNewElement: function (tag, propList, next = null) {
             let element = document.createElement(tag);
             for (let prop in propList) {
-                if (element.hasOwnProperty(prop)) {
-                    element.setAttribute(prop, propList[prop]);
-                }
+                element.setAttribute(prop, propList[prop]);
             }
 
-            if(next) next(element);
+            if (next) next(element);
 
             return element;
         },
@@ -217,17 +219,21 @@ function tmlTitle(data) {
         let base = {
             default: {
                 trigger: (data.trigger || '# index').trim(),
-                orderIndex: data.orderIndex && 'ol' || 'ul',
+                orderTag: /*data.orderIndex && 'ol' || */'ul',
                 showReverseBtn: data.showReverseBtn || false,
                 showCopyBtn: data.showCopyBtn || false,
                 scrollType: data.scrollType || null,
             },
-            headerField:{
-                id: 'tmlTitle-tagIndexor'
-            },
-            header: {
-                text: data.indexorTitle || 'Index',
-                tag: data.indexorTitleTag || 'h3'
+            headerField: {
+                id: 'tmlTitle-tagIndexor',
+                header: {
+                    text: data.indexorTitle || 'Index',
+                    tag: data.indexorTitleTag || 'h3'
+                },
+                list: {
+                    id: 'tmlTitle-idx-list',
+                    marginInterval:1
+                }
             },
             copyBtn: {
                 class: function (selector = true) {
@@ -252,32 +258,23 @@ function tmlTitle(data) {
                     let ret = 'tmlTitle-indexor-item';
                     if (selector == true) ret = `.${ret}`;
                     return ret;
+                },
+                orderingClass: function (i, selector = true){
+                    let ret = `tmlTitle-indexor-items-${i}`;
+                    if (selector == true) ret = `.${ret}`;
+                    return ret;
                 }
             },
             prop: {
                 target: `tmlTitle-idx-target`
             }
-
-            /*,
-            mainFrame: {
-                id: `tmlTitle-tagIndexor`,
-                title: data.indexorTitle || 'Index',
-                tag: data.indexorTitleTag || 'h3'
-            },
-            copyBtn: {
-                class: 'tmlTitle-idx-copylink',
-            },
-            revBtn: {
-                class: 'tmlTitle-idx-go-mainframe'
-            },
-            targetProp: `tmlTitle-idx-target`*/
         };
 
         {   // indexor creatable
             data.contentQuery = tools.findArticleArea(data.contentQuery); // find article area
 
             pDoc = document.querySelectorAll(`${data.contentQuery} > p`); // select article area element
-            
+
             let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
             if (!reg.exec(pDoc[pDoc.length - 1].innerText)) return; // escape this function, if trigger is not exists
             else pDoc[pDoc.length - 1].remove(); // delete trigger tag, if this docum has trigger
@@ -291,13 +288,13 @@ function tmlTitle(data) {
         let hrList;
         hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
         let nod = [];
-        
+
         function FindObjInParagraph(v, index) {
             let ret = [];
             do {
                 let tagIndex;
-                if (tagIndex = base.idxList.tag.indexOf(v.tagName.toLowerCase()) != -1) {
-                    v.classList.add(base.defaulot.idxList.class(false)); // for finding target after this working
+                if ((tagIndex = base.idxList.tag.indexOf(v.tagName.toLowerCase())) != -1) {
+                    v.classList.add(base.idxList.class(false)); // for finding target after this working
                     let idValue = base.idxList.id(index++);
 
                     if (v.id == '') v.id = idValue; // id-value normalization, without tag that already has id value
@@ -309,19 +306,26 @@ function tmlTitle(data) {
                         text: v.innerText.trim()
                     });
                     if (base.default.showCopyBtn === true) { // create button that copying url of this paragraph
-                        v.appendChild(tools.getNewElement('span', {
+                        let copy = tools.getNewElement('span', {
                             class: base.copyBtn.class(false),
                             target: `${tools.getPostUrl()}#${v.id}`
-                        }));
+                        });
+                        copy.append('copy');
+                        v.appendChild(copy);
                     }
                     if (base.default.showReverseBtn === true) { // create button that going to index area
-                        v.appendChild(tools.getNewElement('span', {
+                        let revBtn = tools.getNewElement('span', {
                             class: base.revBtn.class(false),
-                            [base.targetProp]: `#${base.mainFrame.id}`,
-                            title: `${base.mainFrame.title}로 이동`
-                        }));
+                            [base.prop.target]: `#${base.headerField.id}`,
+                            title: `${base.headerField.title}로 이동`
+                        });
+                        revBtn.append('^');
+                        v.appendChild(revBtn);
                     }
-                };
+                }
+
+                v = v.nextElementSibling;
+
             } while (v && v.tagName.toLowerCase() != 'hr');
             return ret;
         }
@@ -329,80 +333,56 @@ function tmlTitle(data) {
         let idIndex = 0;
         hrList.forEach(element => {
             nod.push(FindObjInParagraph(element, idIndex));
-            idIndex += nod[nod.length].length;
+            idIndex += nod[nod.length - 1].length;
         });
         let idxGroup = {
-            baseTag:tools.getNewElement('div', {
-                id:base.headerField.id,
+            baseTag: tools.getNewElement('div', {
+                id: base.headerField.id
             })
         };
-        
-        idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.header.tag, null));
-        idxGroup.headerTag.innerText = base.header.text;
-        idxGroup.baseTag.appendChild(idxGroup.listTag = tools.getNewElement(base.default.orderIndex, null));
-        
-        let curLI = tools.getNewElement('li', )
 
+        idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.headerField.header.tag, null));
+        idxGroup.headerTag.innerText = base.headerField.header.text;
+
+        idxGroup.baseTag.appendChild(
+            idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
+                id: base.headerField.list.id
+            })
+        );
         nod.forEach(arr => {
+            ndList = [];
             for (let i = 1; i < arr.length; ++i) {
-                if(arr[i].order <= arr[0].order)arr[i].order = 0;
+                if (arr[i].order <= arr[0].order) arr[i].order = 0;
                 else arr[i].order -= arr[0].order;
             }
-            arr[i].order = 0;
+            arr[0].order = 0;
 
-
-
-        });
-
-
-        let appendList = [hrList[0].cloneNode(true), idxGroup.baseTag];
-
-        appendList.forEach(element =>{
-            hrList[0].parent.insertBefore(element, hrList[0].nextElementSibling);
-        })
-
-        let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-        let orderIndexor = {
-            open: data.orderIndex && `<ol>` || `<ul>`,
-            close: data.orderIndex && `</ol>` || `</ul>`
-        };
-        let nod = [];
-        while (curTag) {
-            let curTagName = curTag.tagName.toLowerCase();
-            if (indexorTagList.contains(curTagName)) {
-                let idValue = base.default.idxList.id(nod.length);
-                curTag.classList.add(base.default.idxList.class(false));
-                if (curTag.id == '') {
-                    curTag.id = idValue;
-                } else {
-                    idValue = curTag.id;
-                }
-                nod.push({
-                    id: idValue,
-                    text: curTag.innerText.trim()
+            arr.forEach(element =>{
+                let li = tools.getNewElement('li',{
+                    class:base.idxList.orderingClass(element.order,false),
+                    [base.prop.target]:`#${element.id}`
                 });
-                if (data.showCopyBtn) curTag.innerHTML += `<span class="${base.copyBtn.class}" target="${document.location.href}#${curTag.id}">copy</span>`
-                if (data.showReverseBtn) curTag.innerHTML += `<span class="${base.revBtn.class}" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
-            }
-            curTag = curTag.nextElementSibling;
-        }
-        if (nod == []) return;
-        let ret = `<div id="${base.mainFrame.id}"><${base.mainFrame.tag}>${base.mainFrame.title}</${base.mainFrame.tag}>`;
-        ret += `${orderIndexor.open}`
-        nod.forEach(element => {
-            ret += `<li ${base.targetProp}="#${element.id}">${element.text}</li>`;
-        })
-        ret += `${orderIndexor.close}${scriptInfo.makerCode(true, `tagIndexor`)}</div>`;
+                li.append(element.text);
 
-        curTag = document.querySelector(`${data.contentQuery} > hr`);
+                idxGroup.listTag.appendChild(li);
 
-        curTag.outerHTML += ret + curTag.outerHTML;
-        document.querySelectorAll(`[${base.targetProp}]`).forEach(element => {
-            element.addEventListener('click', function (e) {
-                scrollMove(element.getAttribute(`${base.targetProp}`), data.scrollType);
             });
         });
-        document.querySelectorAll(`span.${base.copyBtn.class}`).forEach(element => {
+
+        if(!nod) return;
+        let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor') ,idxGroup.baseTag];
+
+        appendList.forEach(element => {
+            hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
+        })
+
+        
+        document.querySelectorAll(`[${base.prop.target}]`).forEach(element => {
+            element.addEventListener('click', function (e) {
+                scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
+            });
+        });
+        document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => {
             element.addEventListener('click', function (e) {
                 let ta = document.createElement('textarea');
                 ta.value = element.getAttribute('target');
