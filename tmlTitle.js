@@ -344,38 +344,59 @@ function tmlTitle(data) {
         idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.headerField.header.tag, null));
         idxGroup.headerTag.innerText = base.headerField.header.text;
 
+        function createIdxList(depth, stack, arr){
+            
+        }
+
         idxGroup.baseTag.appendChild(
             idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
                 id: base.headerField.list.id
             })
         );
-        nod.forEach(arr => {
-            ndList = [];
-            for (let i = 1; i < arr.length; ++i) {
-                if (arr[i].order <= arr[0].order) arr[i].order = 0;
-                else arr[i].order -= arr[0].order;
-            }
-            arr[0].order = 0;
 
-            arr.forEach(element =>{
-                let li = tools.getNewElement('li',{
-                    class:base.idxList.orderingClass(element.order,false),
-                    [base.prop.target]:`#${element.id}`
-                });
-                li.append(element.text);
-
-                idxGroup.listTag.appendChild(li);
-
+        // ordering
+        
+        let stack = [];
+        let curParent = idxGroup.listTag;
+        for(let i = 0 ; i< nod.length;++i){
+            let value = nod[i][0].order;
+            nod[i].forEach(element => { // order count minimize
+                if(element.order < value) element.order = 0;
+                else element.order -= value;
             });
-        });
+
+            curParent = idxGroup.listTag;
+            for(let k = 0 ; k < nod[i].length;++k){
+                while(stack.top() && stack.top().order >= nod[i][k].order) {
+                    stack.pop();
+                    curParent = curParent.parentElement.parentElement;
+                }// small is strong
+                if(curParent === null) curParent = idxGroup.baseTag;
+                if(stack.top()){ // it has
+                    let ol = tools.getNewElement(base.default.orderTag);
+                    curParent.lastElementChild.appendChild(ol);
+                    curParent = ol;
+                }
+                let li = tools.getNewElement('li',{
+                    class:base.idxList.orderingClass(nod[i][k].order,false),
+                    [base.prop.target]:`#${nod[i][k].id}`
+                });
+                li.append(nod[i][k].text);
+                stack.push(nod[i][k]);
+                console.log(k, stack, nod[i][k]);
+                console.log(curParent);
+                curParent.appendChild(li);
+            }
+        }
+
+        // end ordering
 
         if(!nod) return;
         let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor') ,idxGroup.baseTag];
 
         appendList.forEach(element => {
             hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
-        })
-
+        });
         
         document.querySelectorAll(`[${base.prop.target}]`).forEach(element => {
             element.addEventListener('click', function (e) {
