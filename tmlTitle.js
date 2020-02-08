@@ -6,11 +6,15 @@
 */
 function tmlTitle(data) {
 
+    Array.prototype.top = function () {
+        return this[this.length - 1];
+    };
+
     let scriptInfo = {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.01.`,
+        release: `v20.02.06.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -19,7 +23,7 @@ function tmlTitle(data) {
             if (isCode) return p.outerHTML;
             else return p;
         }
-    }
+    };
 
     data.selfDesign = data.selfDesign || null;
 
@@ -83,8 +87,24 @@ function tmlTitle(data) {
                 }
             }
             return tpDoc.query;
+        },
+        getNewElement: function (tag, propList, next = null) {
+            let element = document.createElement(tag);
+            for (let prop in propList) {
+                element.setAttribute(prop, propList[prop]);
+            }
+
+            if (next) next(element);
+
+            return element;
+        },
+        getPostUrl: function () {
+            let reg = new RegExp(`(https?\:\/\/[^\/]*\/[^\?]*)`);
+            let ret = reg.exec(document.location.href);
+            if (ret) return ret[1];
+            return null;
         }
-    }
+    };
 
     console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트 (${scriptInfo.release})\n` +
         `개발자블로그 : ${scriptInfo.blog}\n` +
@@ -100,36 +120,36 @@ function tmlTitle(data) {
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
         let base = {
-            default:{ // script default setting values
+            default: { // script default setting values
                 delTitleContent: data.delTitleContent === true,
                 prevWord: data.prevWord || '# ',
                 addButton: data.addButton === true,
                 defaultOpenTitle: data.defaultOpenTitle || '더보기',
                 defaultCloseTitle: data.defaultCloseTitle || '닫기'
             },
-            doc:{ // moreLess doc info
-                tag:'div',
-                class:function(selector = true){
+            doc: { // moreLess doc info
+                tag: 'div',
+                class: function (selector = true) {
                     let ret = 'moreless-content';
-                    if(selector === true) ret = `.${ret}`;
+                    if (selector === true) ret = `.${ret}`;
                     return ret;
                 },
-                prop:{ // moreLess doc property
-                    more:'data-text-more',
-                    less:'data-text-less'
+                prop: { // moreLess doc property
+                    more: 'data-text-more',
+                    less: 'data-text-less'
                 },
-                button:{ // moreLess open/clsoe button info
-                    tag:'a',
-                    class:function(selector = true){
+                button: { // moreLess open/clsoe button info
+                    tag: 'a',
+                    class: function (selector = true) {
                         let ret = 'btn-toggle-moreless';
-                        if(selector === true) ret = `.${ret}`;
+                        if (selector === true) ret = `.${ret}`;
                         return ret;
                     }
                 },
-                extraButton:{
-                    class:function(selector = true){
+                extraButton: {
+                    class: function (selector = true) {
                         let ret = 'tmlTitle-extrabtn';
-                        if(selector === true) ret = `.${ret}`;
+                        if (selector === true) ret = `.${ret}`;
                         return ret;
                     }
                 }
@@ -148,13 +168,13 @@ function tmlTitle(data) {
         function open(parent) {
             parent.classList.add('open');
             let btn = parent.querySelectorAll(`${base.doc.button.class()}`);
-            btn.forEach(element =>{
+            btn.forEach(element => {
                 element.innerText = parent.getAttribute(base.doc.prop.less);
             });
             if (btn[1]) btn[1].style.display = null;
         }
-        
-        parent.forEach(element =>{
+
+        parent.forEach(element => {
             if (base.default.addButton === true) {
                 element.innerHTML += element.querySelector(`${base.doc.button.class()}`).outerHTML;
                 element.lastChild.classList.add(base.doc.extraButton.class(false));
@@ -162,28 +182,28 @@ function tmlTitle(data) {
             }
             let visBtn = element.querySelectorAll(`${base.doc.button.class()}`);
             let content = element.querySelectorAll(`${base.doc.class()} *`);
-            
+
             let openTitleItem = content[0].tagName == 'P' && content[0];
             let closeTitleItem = content[content.length - 1].tagName == 'P' && content[content.length - 1];
 
             let titleFindRegexp = new RegExp(`${tools.escapeRegExp(base.default.prevWord)}(.*)`);
-           
-            if(openTitleItem){
-                element.setAttribute(base.doc.prop.more, 
-                        titleFindRegexp.exec(openTitleItem.innerText)[1] || base.default.defaultOpenTitle);
-                if(base.default.delTitleContent === true) openTitleItem.remove();
+
+            if (openTitleItem) {
+                element.setAttribute(base.doc.prop.more,
+                    titleFindRegexp.exec(openTitleItem.innerText)[1] || base.default.defaultOpenTitle);
+                if (base.default.delTitleContent === true) openTitleItem.remove();
             }
-            
-            if(closeTitleItem){
+
+            if (closeTitleItem) {
                 element.setAttribute(base.doc.prop.less,
-                        titleFindRegexp.exec(clseTitleItem.innerText)[1] || base.default.defaultCloseTitle);
-                if(base.default.delTitleContent === true) closeTitleItem.remove();
+                    titleFindRegexp.exec(clseTitleItem.innerText)[1] || base.default.defaultCloseTitle);
+                if (base.default.delTitleContent === true) closeTitleItem.remove();
             }
 
             visBtn.forEach(visElement => {
                 visElement.innerText = element.getAttribute(base.doc.prop.more);
 
-                visElement.addEventListener('click', function(e){
+                visElement.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (element.classList.contains('open')) {
                         close(element);
@@ -199,27 +219,65 @@ function tmlTitle(data) {
 
     function tagIndexor(data) {
         let base = {
-            mainFrame: {
-                id: `tmlTitle-tagIndexor`,
-                title: data.indexorTitle || 'Index',
-                tag: data.indexorTitleTag || 'h3'
+            default: {
+                trigger: (data.trigger || '# index').trim(),
+                orderTag: data.orderIndex && 'ol' || 'ul',
+                showReverseBtn: data.showReverseBtn || false,
+                showCopyBtn: data.showCopyBtn || false,
+                scrollType: data.scrollType || null,
             },
-            copyBtn:{
-                class:'tmlTitle-idx-copylink',
+            headerField: {
+                id: 'tmlTitle-tagIndexor',
+                header: {
+                    text: data.indexorTitle || 'Index',
+                    tag: data.indexorTitleTag || 'h3'
+                },
+                list: {
+                    id: 'tmlTitle-idx-list'
+                },
+                idxList: {
+                    tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // Item order is priority
+                    id: function (i) {
+                        return `tmlTitle-tagIndexor-${i}`;
+                    },
+                    class: function (selector = true) {
+                        let ret = 'tmlTitle-indexor-item';
+                        if (selector == true) ret = `.${ret}`;
+                        return ret;
+                    },
+                    inner:{
+                        tag:'span',
+                        class:`tmlTitle-indexor-item-inner`
+                    }
+                }
             },
-            revBtn:{
-                class:'tmlTitle-idx-go-mainframe'
+            copyBtn: {
+                class: function (selector = true) {
+                    let ret = 'tmlTitle-idx-copylink';
+                    if (selector === true) ret = `.${ret}`;
+                    return ret;
+                }
             },
-            targetProp: `tmlTitle-idx-target`
+            revBtn: {
+                class: function (selector = true) {
+                    let ret = 'tmlTitle-idx-go-mainframe';
+                    if (selector === true) ret = `.${ret}`;
+                    return ret;
+                }
+            },
+            prop: {
+                target: `tmlTitle-idx-target`
+            }
         };
 
         {   // indexor creatable
-            data.contentQuery = tools.findArticleArea(data.contentQuery);
+            data.contentQuery = tools.findArticleArea(data.contentQuery); // find article area
 
-            pDoc = document.querySelectorAll(`${data.contentQuery} > p`);
-            data.trigger = (data.trigger || '# index').trim();
-            if (pDoc[pDoc.length - 1].innerText.toLowerCase().trim() != data.trigger) return;
-            else pDoc[pDoc.length - 1].remove();
+            pDoc = document.querySelectorAll(`${data.contentQuery} > p`); // select article area element
+
+            let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
+            if (!reg.exec(pDoc[pDoc.length - 1].innerText)) return; // escape this function, if trigger is not exists
+            else pDoc[pDoc.length - 1].remove(); // delete trigger tag, if this docum has trigger
         }
 
         function scrollMove(target, movetype) {
@@ -227,50 +285,130 @@ function tmlTitle(data) {
             if (c != null) c.scrollIntoView({ behavior: movetype });
         }
 
-        let curTag = document.querySelector(`${data.contentQuery} > hr`);
-        let indexorTagList = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-        let orderIndexor = {
-            open: data.orderIndex && `<ol>` || `<ul>`,
-            close: data.orderIndex && `</ol>` || `</ul>`
-        };
+        let hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
         let nod = [];
-        while (curTag) {
-            let curTagName = curTag.tagName.toLowerCase();
-            if (indexorTagList.contains(curTagName)) {
-                let idValue = `tmlTitle-tagIndexor-${nod.length}`;
-                curTag.classList.add(`tmlTitle-indexor-item`);
-                if (curTag.id == '') {
-                    curTag.id = idValue;
-                } else {
-                    idValue = curTag.id;
+
+        function FindObjInParagraph(v, index) {
+            let ret = [];
+            do {
+                let tagIndex;
+                if ((tagIndex = base.headerField.idxList.tag.indexOf(v.tagName.toLowerCase())) != -1) {
+                    v.classList.add(base.headerField.idxList.class(false)); // for finding target after this working
+                    let idValue = base.headerField.idxList.id(index++);
+
+                    if (v.id == '') v.id = idValue; // id-value normalization, without tag that already has id value
+                    else idValue = v.id;
+
+                    ret.push({
+                        order: tagIndex,
+                        id: idValue,
+                        text: v.innerText.trim()
+                    });
+                    if (base.default.showCopyBtn === true) { // create button that copying url of this paragraph
+                        let copy = tools.getNewElement('span', {
+                            class: base.copyBtn.class(false),
+                            target: `${tools.getPostUrl()}#${v.id}`
+                        });
+                        copy.append('copy');
+                        v.appendChild(copy);
+                    }
+                    if (base.default.showReverseBtn === true) { // create button that going to index area
+                        let revBtn = tools.getNewElement('span', {
+                            class: base.revBtn.class(false),
+                            [base.prop.target]: `#${base.headerField.id}`,
+                            title: `${base.headerField.title}로 이동`
+                        });
+                        revBtn.append('^');
+                        v.appendChild(revBtn);
+                    }
                 }
-                nod.push({
-                    id: idValue,
-                    text: curTag.innerText.trim()
-                });
-                if (data.showCopyBtn) curTag.innerHTML += `<span class="${base.copyBtn.class}" target="${document.location.href}#${curTag.id}">copy</span>`
-                if (data.showReverseBtn) curTag.innerHTML += `<span class="${base.revBtn.class}" ${base.targetProp}="#${base.mainFrame.id}" title="${base.mainFrame.title}로 이동">∧</span>`;
-            }
-            curTag = curTag.nextElementSibling;
+
+                v = v.nextElementSibling;
+
+            } while (v && v.tagName.toLowerCase() != 'hr');
+            return ret;
         }
-        if (nod == []) return;
-        let ret = `<div id="${base.mainFrame.id}"><${base.mainFrame.tag}>${base.mainFrame.title}</${base.mainFrame.tag}>`;
-        ret += `${orderIndexor.open}`
-        nod.forEach(element =>{
-            ret += `<li ${base.targetProp}="#${element.id}">${element.text}</li>`;
-        })
-        ret += `${orderIndexor.close}${scriptInfo.makerCode(true, `tagIndexor`)}</div>`;
 
-        curTag = document.querySelector(`${data.contentQuery} > hr`);
+        let idIndex = 0;
+        hrList.forEach(element => {
+            nod.push(FindObjInParagraph(element, idIndex));
+            idIndex += nod[nod.length - 1].length;
+        });
+        let idxGroup = {
+            baseTag: tools.getNewElement('div', {
+                id: base.headerField.id
+            })
+        };
 
-        curTag.outerHTML += ret + curTag.outerHTML;
-        document.querySelectorAll(`[${base.targetProp}]`).forEach(element => {
+        idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.headerField.header.tag, null));
+        idxGroup.headerTag.innerText = base.headerField.header.text;
+
+        idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
+            id: base.headerField.list.id
+        });
+
+        // ordering
+
+        let stack = [];
+        let curParent = idxGroup.listTag;
+        for (let i = 0; i < nod.length; ++i) { // index tag creator
+            let value = nod[i][0].order;
+            nod[i].forEach(element => { // order count minimize
+                if (element.order < value) element.order = 0;
+                else element.order -= value;
+            });
+
+            curParent = idxGroup.listTag;
+            for (let k = 0; k < nod[i].length; ++k) {
+                while (stack.top() && stack.top().order >= nod[i][k].order) { // small is strong
+                    stack.pop();
+                    if (curParent !== idxGroup.listTag) curParent = curParent.parentElement.parentElement;
+                }
+                if (curParent === null) curParent = idxGroup.baseTag;
+                if (stack.top()) { // it has
+                    let temp = curParent.querySelector(base.default.orderTag);
+                    if (temp) {
+                        curParent = temp;
+                    } else {
+                        let ol = tools.getNewElement(base.default.orderTag);
+                        curParent.lastElementChild.appendChild(ol);
+                        curParent = ol;
+                    }
+                }
+                let li = tools.getNewElement('li',{
+                    [base.prop.target]:`#${nod[i][k].id}`,
+                    style:`font-size:${1.0 - .05 * stack.length}rem`
+                });
+                li.append(nod[i][k].text);
+                stack.push(nod[i][k]);
+
+                curParent.appendChild(li);
+            }
+        }
+
+        // end ordering
+
+        if (!nod) return;
+        idxGroup.baseTag.appendChild(idxGroup.listTag);
+        let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor'), idxGroup.baseTag];
+
+        appendList.forEach(element => {
+            hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
+        });
+
+        document.querySelectorAll(`[${base.prop.target}]`).forEach(element => {
             element.addEventListener('click', function (e) {
-                scrollMove(element.getAttribute(`${base.targetProp}`), data.scrollType);
+                e.preventDefault();
+                e.stopPropagation();
+
+                scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
             });
         });
-        document.querySelectorAll(`span.${base.copyBtn.class}`).forEach(element => {
+        document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => {
             element.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 let ta = document.createElement('textarea');
                 ta.value = element.getAttribute('target');
                 ta.style.display = 'null';
@@ -279,12 +417,10 @@ function tmlTitle(data) {
                 ta.setSelectionRange(0, ta.value.length);
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                e.preventDefault();
-                e.stopPropagation();
                 tools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.` + '\n\n'
-                                            + `참고: 일부 브라우저에서는 자동 복사가 제한될 수 있습니다.` + '\n'
-                                            + `필요시 아래 링크를 이용하세요.\n${element.getAttribute('target')}`, 'indexor-linkCopy')
-            })
+                    + `참고: 일부 브라우저에서는 자동 복사가 제한될 수 있습니다.` + '\n'
+                    + `필요시 아래 링크를 이용하세요.\n${element.getAttribute('target')}`, 'indexor-linkCopy')
+            });
         });
         let curURL = location.href.toString();
         let curLoc = -1;
@@ -353,7 +489,7 @@ function tmlTitle(data) {
         }
 
         if (data.showIntoBottom) {
-            let btmFT = `<div class="tmlTitle-footNote-btmArea"><${data.titleTag}>주석</${data.titleTag}>`;
+            let btmFT = `<div class="tmlTitle-footNote-btmArea"><${data.titleTag}>각주</${data.titleTag}>`;
             for (let i = 0; i < nod.length; ++i) {
                 btmFT += `<p class="tmlTitle-footNote-btmArea-content"><a href="#tmlTitle-footNoteOri-${i}">${nod[i].title}</a> : ${nod[i].text}</p>`;
             }
