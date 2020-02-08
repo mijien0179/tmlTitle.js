@@ -8,13 +8,13 @@ function tmlTitle(data) {
 
     Array.prototype.top = function () {
         return this[this.length - 1];
-    }
+    };
 
     let scriptInfo = {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.06.`,
+        release: `v20.02.08.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -23,7 +23,7 @@ function tmlTitle(data) {
             if (isCode) return p.outerHTML;
             else return p;
         }
-    }
+    };
 
     data.selfDesign = data.selfDesign || null;
 
@@ -104,14 +104,16 @@ function tmlTitle(data) {
             if (ret) return ret[1];
             return null;
         }
-    }
+    };
 
     console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트 (${scriptInfo.release})\n` +
         `개발자블로그 : ${scriptInfo.blog}\n` +
         `Git 주소: ${scriptInfo.git}\n\n` +
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
         `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.\n` +
-        `Chrome 브라우저만 테스트를 진행했습니다.`);
+        `Chrome 브라우저 기준으로 테스트를 진행합니다.\n\n` +
+        `다음 브라우저에 대해 pre-test가 완료되었습니다.\n` +
+        `Firefox, Naver Whale`);
 
     if (document.body.id != 'tt-body-page') return; // function stop, if this page is not Post page.
 
@@ -219,7 +221,7 @@ function tmlTitle(data) {
         let base = {
             default: {
                 trigger: (data.trigger || '# index').trim(),
-                orderTag: /*data.orderIndex && 'ol' || */'ul',
+                orderTag: data.orderIndex && 'ol' || 'ul',
                 showReverseBtn: data.showReverseBtn || false,
                 showCopyBtn: data.showCopyBtn || false,
                 scrollType: data.scrollType || null,
@@ -231,8 +233,22 @@ function tmlTitle(data) {
                     tag: data.indexorTitleTag || 'h3'
                 },
                 list: {
-                    id: 'tmlTitle-idx-list',
-                    marginInterval:1
+                    id: 'tmlTitle-idx-list'
+                },
+                idxList: {
+                    tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // Item order is priority
+                    id: function (i) {
+                        return `tmlTitle-tagIndexor-${i}`;
+                    },
+                    class: function (selector = true) {
+                        let ret = 'tmlTitle-indexor-item';
+                        if (selector == true) ret = `.${ret}`;
+                        return ret;
+                    },
+                    inner:{
+                        tag:'span',
+                        class:`tmlTitle-indexor-item-inner`
+                    }
                 }
             },
             copyBtn: {
@@ -246,22 +262,6 @@ function tmlTitle(data) {
                 class: function (selector = true) {
                     let ret = 'tmlTitle-idx-go-mainframe';
                     if (selector === true) ret = `.${ret}`;
-                    return ret;
-                }
-            },
-            idxList: {
-                tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // Item order is priority
-                id: function (i) {
-                    return `tmlTitle-tagIndexor-${i}`;
-                },
-                class: function (selector = true) {
-                    let ret = 'tmlTitle-indexor-item';
-                    if (selector == true) ret = `.${ret}`;
-                    return ret;
-                },
-                orderingClass: function (i, selector = true){
-                    let ret = `tmlTitle-indexor-items-${i}`;
-                    if (selector == true) ret = `.${ret}`;
                     return ret;
                 }
             },
@@ -285,17 +285,16 @@ function tmlTitle(data) {
             if (c != null) c.scrollIntoView({ behavior: movetype });
         }
 
-        let hrList;
-        hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
+        let hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
         let nod = [];
 
         function FindObjInParagraph(v, index) {
             let ret = [];
             do {
                 let tagIndex;
-                if ((tagIndex = base.idxList.tag.indexOf(v.tagName.toLowerCase())) != -1) {
-                    v.classList.add(base.idxList.class(false)); // for finding target after this working
-                    let idValue = base.idxList.id(index++);
+                if ((tagIndex = base.headerField.idxList.tag.indexOf(v.tagName.toLowerCase())) != -1) {
+                    v.classList.add(base.headerField.idxList.class(false)); // for finding target after this working
+                    let idValue = base.headerField.idxList.id(index++);
 
                     if (v.id == '') v.id = idValue; // id-value normalization, without tag that already has id value
                     else idValue = v.id;
@@ -344,67 +343,72 @@ function tmlTitle(data) {
         idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.headerField.header.tag, null));
         idxGroup.headerTag.innerText = base.headerField.header.text;
 
-        function createIdxList(depth, stack, arr){
-            
-        }
-
-        idxGroup.baseTag.appendChild(
-            idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
-                id: base.headerField.list.id
-            })
-        );
+        idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
+            id: base.headerField.list.id
+        });
 
         // ordering
-        
+
         let stack = [];
         let curParent = idxGroup.listTag;
-        for(let i = 0 ; i< nod.length;++i){
+        for (let i = 0; i < nod.length; ++i) { // index tag creator
             let value = nod[i][0].order;
             nod[i].forEach(element => { // order count minimize
-                if(element.order < value) element.order = 0;
+                if (element.order < value) element.order = 0;
                 else element.order -= value;
             });
 
             curParent = idxGroup.listTag;
-            for(let k = 0 ; k < nod[i].length;++k){
-                while(stack.top() && stack.top().order >= nod[i][k].order) {
+            for (let k = 0; k < nod[i].length; ++k) {
+                while (stack.top() && stack.top().order >= nod[i][k].order) { // small is strong
                     stack.pop();
-                    curParent = curParent.parentElement.parentElement;
-                }// small is strong
-                if(curParent === null) curParent = idxGroup.baseTag;
-                if(stack.top()){ // it has
-                    let ol = tools.getNewElement(base.default.orderTag);
-                    curParent.lastElementChild.appendChild(ol);
-                    curParent = ol;
+                    if (curParent !== idxGroup.listTag) curParent = curParent.parentElement.parentElement;
+                }
+                if (curParent === null) curParent = idxGroup.baseTag;
+                if (stack.top()) { // it has
+                    let temp = curParent.querySelector(base.default.orderTag);
+                    if (temp) {
+                        curParent = temp;
+                    } else {
+                        let ol = tools.getNewElement(base.default.orderTag);
+                        curParent.lastElementChild.appendChild(ol);
+                        curParent = ol;
+                    }
                 }
                 let li = tools.getNewElement('li',{
-                    class:base.idxList.orderingClass(nod[i][k].order,false),
-                    [base.prop.target]:`#${nod[i][k].id}`
+                    [base.prop.target]:`#${nod[i][k].id}`,
+                    style:`font-size:${1.0 - .05 * stack.length}rem`
                 });
                 li.append(nod[i][k].text);
                 stack.push(nod[i][k]);
-                console.log(k, stack, nod[i][k]);
-                console.log(curParent);
+
                 curParent.appendChild(li);
             }
         }
 
         // end ordering
 
-        if(!nod) return;
-        let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor') ,idxGroup.baseTag];
+        if (!nod) return;
+        idxGroup.baseTag.appendChild(idxGroup.listTag);
+        let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor'), idxGroup.baseTag];
 
         appendList.forEach(element => {
             hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
         });
-        
+
         document.querySelectorAll(`[${base.prop.target}]`).forEach(element => {
             element.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
             });
         });
         document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => {
             element.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 let ta = document.createElement('textarea');
                 ta.value = element.getAttribute('target');
                 ta.style.display = 'null';
@@ -413,12 +417,10 @@ function tmlTitle(data) {
                 ta.setSelectionRange(0, ta.value.length);
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                e.preventDefault();
-                e.stopPropagation();
                 tools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.` + '\n\n'
                     + `참고: 일부 브라우저에서는 자동 복사가 제한될 수 있습니다.` + '\n'
                     + `필요시 아래 링크를 이용하세요.\n${element.getAttribute('target')}`, 'indexor-linkCopy')
-            })
+            });
         });
         let curURL = location.href.toString();
         let curLoc = -1;
