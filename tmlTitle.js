@@ -139,6 +139,7 @@ function tmlTitle(data) {
                     }
                 },
                 extraButton: {
+                    show: data.addButton === true,
                     class: function (selector = true) {
                         let ret = 'tmlTitle-extrabtn';
                         if (selector === true) ret = `.${ret}`;
@@ -148,20 +149,20 @@ function tmlTitle(data) {
             }
         };
 
-        function close(parent) {
-            parent.classList.remove('open');
-            let btn = parent.querySelectorAll(`${base.doc.button.class()}`);
+        function close(target) {
+            target.classList.remove('open');
+            let btn = target.querySelectorAll(`${base.doc.button.class()}`);
             btn.forEach(element => {
-                element.innerText = parent.getAttribute(base.doc.prop.more);
+                element.innerText = target.getAttribute(base.doc.prop.more);
             });
             if (btn[1]) btn[1].style.display = 'none';
         }
 
-        function open(parent) {
-            parent.classList.add('open');
-            let btn = parent.querySelectorAll(`${base.doc.button.class()}`);
+        function open(target) {
+            target.classList.add('open');
+            let btn = target.querySelectorAll(`${base.doc.button.class()}`);
             btn.forEach(element => {
-                element.innerText = parent.getAttribute(base.doc.prop.less);
+                element.innerText = target.getAttribute(base.doc.prop.less);
             });
             if (btn[1]) btn[1].style.display = null;
         }
@@ -173,23 +174,34 @@ function tmlTitle(data) {
                 element.lastChild.style.display = `none`;
             }
             let visBtn = element.querySelectorAll(`${base.doc.button.class()}`);
-            let content = element.querySelectorAll(`${base.doc.class()} *`);
+            let c = element.querySelectorAll(`${base.doc.class()} > *`);
 
-            let openTitleItem = content[0].tagName == 'P' && content[0];
-            let closeTitleItem = content[content.length - 1].tagName == 'P' && content[content.length - 1];
+            let openTitleItem = c[0].tagName == 'P' ? c[0] : null;
+            let closeTitleItem = c[c.length - 1].tagName == 'P' ? c[c.length - 1] : null;
 
-            let titleFindRegexp = new RegExp(`${tools.escapeRegExp(base.default.prevWord)}(.*)`);
+            let trigFindRegexp = new RegExp(`${tools.escapeRegExp(base.default.prevWord)}(.*)`);
 
             if (openTitleItem) {
-                element.setAttribute(base.doc.prop.more,
-                    titleFindRegexp.exec(openTitleItem.innerText)[1] || base.default.defaultOpenTitle);
-                if (base.default.delTitleContent === true) openTitleItem.remove();
+                let ret = trigFindRegexp.exec(openTitleItem.innerText);
+
+                if(ret){
+                    element.setAttribute(base.doc.prop.more, ret[1]);
+                    if(base.default.delTitleContent === true) openTitleItem.remove();
+                }else{
+                    openTitleItem = null;
+                    element.setAttribute(base.doc.prop.more, base.default.defaultOpenTitle);
+                }
             }
 
             if (closeTitleItem) {
-                element.setAttribute(base.doc.prop.less,
-                    titleFindRegexp.exec(clseTitleItem.innerText)[1] || base.default.defaultCloseTitle);
-                if (base.default.delTitleContent === true) closeTitleItem.remove();
+                let ret = trigFindRegexp.exec(closeTitleItem.innerText);
+                if(ret){
+                    element.setAttribute(base.doc.prop.less,ret[1]);
+                    if(base.default.delTitleContent === true) closeTitleItem.remove();
+                }else{
+                    closeTitleItem = null;
+                    element.setAttribute(base.doc.prop.less,base.default.defaultCloseTitle);
+                }
             }
 
             visBtn.forEach(visElement => {
@@ -198,9 +210,9 @@ function tmlTitle(data) {
                 visElement.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (element.classList.contains('open')) {
-                        close(element);
-                    } else {
                         open(element);
+                    } else {
+                        close(element);
                     }
                 });
             });
@@ -237,9 +249,9 @@ function tmlTitle(data) {
                         if (selector == true) ret = `.${ret}`;
                         return ret;
                     },
-                    inner:{
-                        tag:'span',
-                        class:`tmlTitle-indexor-item-inner`
+                    inner: {
+                        tag: 'span',
+                        class: `tmlTitle-indexor-item-inner`
                     }
                 }
             },
@@ -367,9 +379,9 @@ function tmlTitle(data) {
                         curParent = ol;
                     }
                 }
-                let li = tools.getNewElement('li',{
-                    [base.prop.target]:`#${nod[i][k].id}`,
-                    style:`font-size:${1.0 - .05 * stack.length}rem`
+                let li = tools.getNewElement('li', {
+                    [base.prop.target]: `#${nod[i][k].id}`,
+                    style: `font-size:${1.0 - .05 * stack.length}rem`
                 });
                 li.append(nod[i][k].text);
                 stack.push(nod[i][k]);
