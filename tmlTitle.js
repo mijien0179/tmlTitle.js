@@ -1,9 +1,3 @@
-
-/*
-// https://pang2h.tistory.com/
-// https://github.com/mijien0179/tmlTitle.js
-//
-*/
 function tmlTitle(data) {
 
     Array.prototype.top = function () {
@@ -88,13 +82,11 @@ function tmlTitle(data) {
             }
             return tpDoc.query;
         },
-        getNewElement: function (tag, propList, next = null) {
+        getNewElement: function (tag, propList) {
             let element = document.createElement(tag);
             for (let prop in propList) {
                 element.setAttribute(prop, propList[prop]);
             }
-
-            if (next) next(element);
 
             return element;
         },
