@@ -192,7 +192,7 @@ function tmlTitle(data) {
             let openTitleItem = c[0].tagName == 'P' ? c[0] : null;
             let closeTitleItem = c[c.length - 1].tagName == 'P' ? c[c.length - 1] : null;
 
-            let trigFindRegexp = new RegExp(`${tools.escapeRegExp(base.default.prevWord)}(.*)`);
+            let trigFindRegexp = new RegExp(`^${tools.escapeRegExp(base.default.prevWord)}(.*)`);
 
             if (openTitleItem) {
                 let ret = trigFindRegexp.exec(openTitleItem.innerText);
