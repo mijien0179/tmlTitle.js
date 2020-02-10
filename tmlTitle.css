@@ -1,3 +1,4 @@
+/* indexor */
 [tmltitle-idx-target],
 .tmlTitle-idx-copylink{
     cursor:pointer;
@@ -7,4 +8,15 @@
 .tmlTitle-idx-copylink,
 .tmlTitle-idx-go-mainframe{
     font-size:0.8em;
+}
+
+
+/* moreLess */
+.tmlTitle-ml-btn-class{
+    text-decoration:none;
+    font-size:1em;
+    line-height:1.05em;
+    cursor:pointer;
+    color:#909090;
+    padding-left:0.3em;
 }

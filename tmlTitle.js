@@ -8,7 +8,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.08.`,
+        release: `v20.02.10.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -130,7 +130,7 @@ function tmlTitle(data) {
                     more: 'data-text-more',
                     less: 'data-text-less'
                 },
-                button: { // moreLess open/clsoe button info
+                defButton: { // 'moreLess' open/close button info that made by default script
                     tag: 'a',
                     class: function (selector = true) {
                         let ret = 'btn-toggle-moreless';
@@ -139,9 +139,13 @@ function tmlTitle(data) {
                     }
                 },
                 extraButton: {
+                    tag:'p',
                     show: data.addButton === true,
                     class: function (selector = true) {
-                        let ret = 'tmlTitle-extrabtn';
+                        let ret = null;
+                        if(data.buttonClass && data.buttonClass.trim() != '') ret = data.buttonClass.trim();
+                        else ret = 'tmlTitle-ml-btn-class'; // default class value of button that made of script
+
                         if (selector === true) ret = `.${ret}`;
                         return ret;
                     }
@@ -150,17 +154,22 @@ function tmlTitle(data) {
         };
 
         function close(target) {
+            let prevHeight = target.parentElement.clientSize;
             target.classList.remove('open');
-            let btn = target.querySelectorAll(`${base.doc.button.class()}`);
+            let nowHeight = target.parentElement.clientSize - prevHeight;
+            let btn = target.querySelectorAll(base.doc.extraButton.class());
             btn.forEach(element => {
                 element.innerText = target.getAttribute(base.doc.prop.more);
             });
+            scrollBy({
+                top:nowHeight
+            });
             if (btn[1]) btn[1].style.display = 'none';
         }
-
+        
         function open(target) {
             target.classList.add('open');
-            let btn = target.querySelectorAll(`${base.doc.button.class()}`);
+            let btn = target.querySelectorAll(base.doc.extraButton.class());
             btn.forEach(element => {
                 element.innerText = target.getAttribute(base.doc.prop.less);
             });
@@ -168,12 +177,16 @@ function tmlTitle(data) {
         }
 
         parent.forEach(element => {
+            element.querySelector(base.doc.defButton.class()).remove();
+            let exBtn = tools.getNewElement(base.doc.extraButton.tag, {
+                class:base.doc.extraButton.class(false)
+            });
+            element.insertBefore(exBtn, element.childNodes[0])
             if (base.default.addButton === true) {
-                element.innerHTML += element.querySelector(`${base.doc.button.class()}`).outerHTML;
-                element.lastChild.classList.add(base.doc.extraButton.class(false));
+                element.appendChild(exBtn.cloneNode(true));
                 element.lastChild.style.display = `none`;
             }
-            let visBtn = element.querySelectorAll(`${base.doc.button.class()}`);
+            let visBtn = element.querySelectorAll(base.doc.extraButton.class());
             let c = element.querySelectorAll(`${base.doc.class()} > *`);
 
             let openTitleItem = c[0].tagName == 'P' ? c[0] : null;
@@ -210,9 +223,9 @@ function tmlTitle(data) {
                 visElement.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (element.classList.contains('open')) {
-                        open(element);
-                    } else {
                         close(element);
+                    } else {
+                        open(element);
                     }
                 });
             });
