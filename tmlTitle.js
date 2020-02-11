@@ -8,7 +8,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.10.`,
+        release: `v20.02.11.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -383,9 +383,9 @@ function tmlTitle(data) {
                 }
                 if (curParent === null) curParent = idxGroup.baseTag;
                 if (stack.top()) { // it has
-                    let temp = curParent.querySelector(base.default.orderTag);
+                    let temp = curParent.querySelectorAll(base.default.orderTag);
                     if (temp) {
-                        curParent = temp;
+                        curParent = temp[temp.length-1];
                     } else {
                         let ol = tools.getNewElement(base.default.orderTag);
                         curParent.lastElementChild.appendChild(ol);
