@@ -4,11 +4,15 @@ function tmlTitle(data) {
         return this[this.length - 1];
     };
 
+    Array.prototype.empty = function (){
+        return this.length === 0;
+    }
+
     let scriptInfo = {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.11.`,
+        release: `v20.02.13.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -71,13 +75,13 @@ function tmlTitle(data) {
             let ret;
             let tpDoc = {
                 query: target[0],
-                size: document.querySelectorAll(`${target[0]} p, ${target[0]} li`).length
+                size: document.querySelectorAll(`${target[0]} > p, ${target[0]} li`).length
             };
             for (let i = 1; i < target.length; ++i) {
-                ret = document.querySelectorAll(`${target[i]} p, ${target[i]} li`).length;
-                if (tpDoc.size < ret.length) {
+                ret = document.querySelectorAll(`${target[i]} > p, ${target[i]} li`).length;
+                if (tpDoc.size < ret) {
                     tpDoc.query = target[i];
-                    tpDoc.size = ret.length;
+                    tpDoc.size = ret;
                 }
             }
             return tpDoc.query;
@@ -237,23 +241,23 @@ function tmlTitle(data) {
     function tagIndexor(data) {
         let base = {
             default: {
-                trigger: (data.trigger || '# index').trim(),
-                orderTag: data.orderIndex && 'ol' || 'ul',
-                showReverseBtn: data.showReverseBtn || false,
-                showCopyBtn: data.showCopyBtn || false,
-                scrollType: data.scrollType || null,
+                trigger: (data.trigger || '# index').trim(),            // STR
+                orderTag: data.orderIndex === true && 'OL' || 'LI' ,    // BOOL
+                showReverseBtn: data.showReverseBtn || false,           // BOOL
+                showCopyBtn: data.showCopyBtn || false,                 // BOOL
+                scrollType: data.scrollType || null,                    // STR
             },
             headerField: {
                 id: 'tmlTitle-tagIndexor',
                 header: {
-                    text: data.indexorTitle || 'Index',
-                    tag: data.indexorTitleTag || 'h3'
+                    text: data.indexorTitle || 'Index', // STR
+                    tag: data.indexorTitleTag || 'h3'   // STR
                 },
                 list: {
                     id: 'tmlTitle-idx-list'
                 },
                 idxList: {
-                    tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // Item order is priority
+                    tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // ARR OF STR, Item order is priority
                     id: function (i) {
                         return `tmlTitle-tagIndexor-${i}`;
                     },
@@ -289,7 +293,6 @@ function tmlTitle(data) {
 
         {   // indexor creatable
             data.contentQuery = tools.findArticleArea(data.contentQuery); // find article area
-
             pDoc = document.querySelectorAll(`${data.contentQuery} > p`); // select article area element
 
             let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
@@ -366,45 +369,50 @@ function tmlTitle(data) {
 
         // ordering
 
-        let stack = [];
-        let curParent = idxGroup.listTag;
         for (let i = 0; i < nod.length; ++i) { // index tag creator
+            if(!nod[i].length) continue;
+            let stack = [];
+            let curParent = idxGroup.listTag;
+
             let value = nod[i][0].order;
             nod[i].forEach(element => { // order count minimize
                 if (element.order < value) element.order = 0;
                 else element.order -= value;
             });
 
-            curParent = idxGroup.listTag;
             for (let k = 0; k < nod[i].length; ++k) {
-                while (stack.top() && stack.top().order >= nod[i][k].order) { // small is strong
+                while (!stack.empty() && stack.top().order >= nod[i][k].order) {
                     stack.pop();
-                    if (curParent !== idxGroup.listTag) curParent = curParent.parentElement.parentElement;
+                    curParent = ((curParent.parentElement || curParent).parentElement) || curParent;
                 }
-                if (curParent === null) curParent = idxGroup.baseTag;
-                if (stack.top()) { // it has
-                    let temp = curParent.querySelectorAll(base.default.orderTag);
-                    if (temp) {
-                        curParent = temp[temp.length-1];
-                    } else {
-                        let ol = tools.getNewElement(base.default.orderTag);
-                        curParent.lastElementChild.appendChild(ol);
-                        curParent = ol;
+                if (!stack.empty()) {
+                    let tmpChild = curParent.lastElementChild.childNodes || [];
+                    let s;
+                    for (s = tmpChild.length - 1; s >= 0; --s) {
+                        if (tmpChild[s].tagName === base.default.orderTag) {
+                            break;
+                        }
+                    }
+                    if (s < 0) { // not exists
+                        let tempLP = tools.getNewElement(base.default.orderTag);
+                        curParent.lastElementChild.appendChild(tempLP);
+                        curParent = tempLP;
+                    }else{
+                        curParent = tmpChild[s];
                     }
                 }
+                                
                 let li = tools.getNewElement('li', {
                     [base.prop.target]: `#${nod[i][k].id}`,
                     style: `font-size:${1.0 - .05 * stack.length}rem`
                 });
                 li.append(nod[i][k].text);
-                stack.push(nod[i][k]);
-
                 curParent.appendChild(li);
+                
+                stack.push(nod[i][k]);
             }
         }
-
         // end ordering
-
         if (!nod) return;
         idxGroup.baseTag.appendChild(idxGroup.listTag);
         let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor'), idxGroup.baseTag];
@@ -417,8 +425,7 @@ function tmlTitle(data) {
             element.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-
-                scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
+                //scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
             });
         });
         document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => {
