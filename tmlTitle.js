@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.13.`,
+        release: `v20.02.14.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -417,18 +417,18 @@ function tmlTitle(data) {
         idxGroup.baseTag.appendChild(idxGroup.listTag);
         let appendList = [hrList[0].cloneNode(true), scriptInfo.makerCode(false, 'tagIndexor'), idxGroup.baseTag];
 
-        appendList.forEach(element => {
+        appendList.forEach(element => { // append indexor Node
             hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
         });
 
-        document.querySelectorAll(`[${base.prop.target}]`).forEach(element => {
+        document.querySelectorAll(`[${base.prop.target}]`).forEach(element => { // binding Move Action
             element.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
             });
         });
-        document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => {
+        document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => { // binding alert Message for copy to clipboard
             element.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -462,26 +462,12 @@ function tmlTitle(data) {
     }
 
     function footNote(data) {
-        let pDoc;
-        {   // footNote creatable
-            let tpDoc = {
-                query: data.contentQuery[0],
-                size: document.querySelectorAll(`${data.contentQuery[0]} p, ${data.contentQuery[0]} li`).length
-            };
-            for (let i = 1; i < data.contentQuery.length; ++i) {
-                pDoc = document.querySelectorAll(`${data.contentQuery[i]} p, ${data.contentQuery[i]} li`);
-                if (tpDoc.size < pDoc.length) {
-                    tpDoc.query = data.contentQuery[i];
-                    tpDoc.size = pDoc.length;
-                }
-            }
-            data.contentQuery = tpDoc.query;
-        }
+        data.contentQuery = tools.findArticleArea(data.contentQuery);
         data.cursor = data.cursor || `pointer`;
         data.color = data.color || `#209dd4`;
         data.titleTag = data.titleTag || `h3`;
-        pDoc = '';
-        ['p', 'li', 'h3'].forEach(element => {
+        let pDoc = '';
+        ['p', 'li', 'h1','h2','h3','h4','h5','h6', 'blockquote'].forEach(element => {
             pDoc += `${data.contentQuery} ${element},`;
         });
         pDoc = pDoc.substring(0, pDoc.length - 1);
@@ -567,18 +553,12 @@ function tmlTitle(data) {
 
 
     if (data.footNote) {
-        if (!(`contentQuery` in data.footNote)) {
-            console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
-            return;
-        }
-        footNote(data.footNote);
+        if (!(`contentQuery` in data.footNote)) console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
+        else footNote(data.footNote);
     }
 
     if (data.tagIndexor) {
-        if (!("contentQuery" in data.tagIndexor)) {
-            console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
-            return;
-        }
-        tagIndexor(data.tagIndexor);
+        if (!("contentQuery" in data.tagIndexor)) console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
+        else tagIndexor(data.tagIndexor);
     }
 }
