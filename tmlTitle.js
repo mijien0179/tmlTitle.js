@@ -425,7 +425,7 @@ function tmlTitle(data) {
             element.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                //scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
+                scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
             });
         });
         document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => {
