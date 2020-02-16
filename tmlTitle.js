@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.14.`,
+        release: `v20.02.16.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -242,9 +242,9 @@ function tmlTitle(data) {
         let base = {
             default: {
                 trigger: (data.trigger || '# index').trim(),            // STR
-                orderTag: data.orderIndex === true && 'OL' || 'LI' ,    // BOOL
-                showReverseBtn: data.showReverseBtn || false,           // BOOL
-                showCopyBtn: data.showCopyBtn || false,                 // BOOL
+                orderTag: data.orderIndex === true && 'OL' || 'UL' ,    // BOOL, tag name must maintain uppercase.
+                showReverseBtn: data.showReverseBtn === true,           // BOOL
+                showCopyBtn: data.showCopyBtn === true,                 // BOOL
                 scrollType: data.scrollType || null,                    // STR
             },
             headerField: {
