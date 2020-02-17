@@ -4,7 +4,7 @@ function tmlTitle(data) {
         return this[this.length - 1];
     };
 
-    Array.prototype.empty = function (){
+    Array.prototype.empty = function () {
         return this.length === 0;
     }
 
@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.16.`,
+        release: `v20.02.17.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -25,7 +25,7 @@ function tmlTitle(data) {
 
     data.selfDesign = data.selfDesign || null;
 
-    var tmlTools = {
+    var tools = {
         escapeRegExp: function (string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         },
@@ -36,16 +36,16 @@ function tmlTitle(data) {
             return decodeURI(string);
         },
         alert: function (title, text, loader = 'null', parent = document.body) {
-            let outside = tmlTools.getNewElement('div', {
+            let outside = tools.getNewElement('div', {
                 id: 'tmlTitle-alert-background'
             });
-            let inside = tmlTools.getNewElement('div', {
+            let inside = tools.getNewElement('div', {
                 id: 'tmlTitle-alert-foreground'
             });
-            let eTitle = tmlTools.getNewElement('p', {
+            let eTitle = tools.getNewElement('p', {
                 id: 'tmlTitle-alert-header'
             });
-            let eText = tmlTools.getNewElement('p', {
+            let eText = tools.getNewElement('p', {
                 id: 'tmlTitle-alert-content'
             });
 
@@ -164,11 +164,11 @@ function tmlTitle(data) {
                     }
                 },
                 extraButton: {
-                    tag:'p',
+                    tag: 'p',
                     show: data.addButton === true,
                     class: function (selector = true) {
                         let ret = null;
-                        if(data.buttonClass && data.buttonClass.trim() != '') ret = data.buttonClass.trim();
+                        if (data.buttonClass && data.buttonClass.trim() != '') ret = data.buttonClass.trim();
                         else ret = 'tmlTitle-ml-btn-class'; // default class value of button that made of script
 
                         if (selector === true) ret = `.${ret}`;
@@ -187,11 +187,11 @@ function tmlTitle(data) {
                 element.innerText = target.getAttribute(base.doc.prop.more);
             });
             scrollBy({
-                top:nowHeight
+                top: nowHeight
             });
             if (btn[1]) btn[1].style.display = 'none';
         }
-        
+
         function open(target) {
             target.classList.add('open');
             let btn = target.querySelectorAll(base.doc.extraButton.class());
@@ -203,8 +203,8 @@ function tmlTitle(data) {
 
         parent.forEach(element => {
             element.querySelector(base.doc.defButton.class()).remove();
-            let exBtn = tmlTools.getNewElement(base.doc.extraButton.tag, {
-                class:base.doc.extraButton.class(false)
+            let exBtn = tools.getNewElement(base.doc.extraButton.tag, {
+                class: base.doc.extraButton.class(false)
             });
             element.insertBefore(exBtn, element.childNodes[0])
             if (base.default.addButton === true) {
@@ -217,15 +217,15 @@ function tmlTitle(data) {
             let openTitleItem = c[0].tagName == 'P' ? c[0] : null;
             let closeTitleItem = c[c.length - 1].tagName == 'P' ? c[c.length - 1] : null;
 
-            let trigFindRegexp = new RegExp(`^${tmlTools.escapeRegExp(base.default.prevWord)}(.*)`);
+            let trigFindRegexp = new RegExp(`^${tools.escapeRegExp(base.default.prevWord)}(.*)`);
 
             if (openTitleItem) {
                 let ret = trigFindRegexp.exec(openTitleItem.innerText);
 
-                if(ret){
+                if (ret) {
                     element.setAttribute(base.doc.prop.more, ret[1]);
-                    if(base.default.delTitleContent === true) openTitleItem.remove();
-                }else{
+                    if (base.default.delTitleContent === true) openTitleItem.remove();
+                } else {
                     openTitleItem = null;
                     element.setAttribute(base.doc.prop.more, base.default.defaultOpenTitle);
                 }
@@ -233,12 +233,12 @@ function tmlTitle(data) {
 
             if (closeTitleItem) {
                 let ret = trigFindRegexp.exec(closeTitleItem.innerText);
-                if(ret){
-                    element.setAttribute(base.doc.prop.less,ret[1]);
-                    if(base.default.delTitleContent === true) closeTitleItem.remove();
-                }else{
+                if (ret) {
+                    element.setAttribute(base.doc.prop.less, ret[1]);
+                    if (base.default.delTitleContent === true) closeTitleItem.remove();
+                } else {
                     closeTitleItem = null;
-                    element.setAttribute(base.doc.prop.less,base.default.defaultCloseTitle);
+                    element.setAttribute(base.doc.prop.less, base.default.defaultCloseTitle);
                 }
             }
 
@@ -263,7 +263,7 @@ function tmlTitle(data) {
         let base = {
             default: {
                 trigger: (data.trigger || '# index').trim(),            // STR
-                orderTag: data.orderIndex === true && 'OL' || 'UL' ,    // BOOL, tag name must maintain uppercase.
+                orderTag: data.orderIndex === true && 'OL' || 'UL',    // BOOL, tag name must maintain uppercase.
                 showReverseBtn: data.showReverseBtn === true,           // BOOL
                 showCopyBtn: data.showCopyBtn === true,                 // BOOL
                 scrollType: data.scrollType || null,                    // STR
@@ -313,10 +313,10 @@ function tmlTitle(data) {
         };
 
         {   // indexor creatable
-            data.contentQuery = tmlTools.findArticleArea(data.contentQuery); // find article area
+            data.contentQuery = tools.findArticleArea(data.contentQuery); // find article area
             pDoc = document.querySelectorAll(`${data.contentQuery} > p`); // select article area element
 
-            let reg = new RegExp(`^${tmlTools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
+            let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
             if (!reg.exec(pDoc[pDoc.length - 1].innerText)) return; // escape this function, if trigger is not exists
             else pDoc[pDoc.length - 1].remove(); // delete trigger tag, if this docum has trigger
         }
@@ -346,15 +346,15 @@ function tmlTitle(data) {
                         text: v.innerText.trim()
                     });
                     if (base.default.showCopyBtn === true) { // create button that copying url of this paragraph
-                        let copy = tmlTools.getNewElement('span', {
+                        let copy = tools.getNewElement('span', {
                             class: base.copyBtn.class(false),
-                            target: `${tmlTools.getPostUrl()}#${v.id}`
+                            target: `${tools.getPostUrl()}#${v.id}`
                         });
                         copy.append('copy');
                         v.appendChild(copy);
                     }
                     if (base.default.showReverseBtn === true) { // create button that going to index area
-                        let revBtn = tmlTools.getNewElement('span', {
+                        let revBtn = tools.getNewElement('span', {
                             class: base.revBtn.class(false),
                             [base.prop.target]: `#${base.headerField.id}`,
                             title: `${base.headerField.title}로 이동`
@@ -376,22 +376,22 @@ function tmlTitle(data) {
             idIndex += nod[nod.length - 1].length;
         });
         let idxGroup = {
-            baseTag: tmlTools.getNewElement('div', {
+            baseTag: tools.getNewElement('div', {
                 id: base.headerField.id
             })
         };
 
-        idxGroup.baseTag.appendChild(idxGroup.headerTag = tmlTools.getNewElement(base.headerField.header.tag, null));
+        idxGroup.baseTag.appendChild(idxGroup.headerTag = tools.getNewElement(base.headerField.header.tag, null));
         idxGroup.headerTag.innerText = base.headerField.header.text;
 
-        idxGroup.listTag = tmlTools.getNewElement(base.default.orderTag/*ol, ul*/, {
+        idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
             id: base.headerField.list.id
         });
 
         // ordering
 
         for (let i = 0; i < nod.length; ++i) { // index tag creator
-            if(!nod[i].length) continue;
+            if (!nod[i].length) continue;
             let stack = [];
             let curParent = idxGroup.listTag;
 
@@ -415,21 +415,25 @@ function tmlTitle(data) {
                         }
                     }
                     if (s < 0) { // not exists
-                        let tempLP = tmlTools.getNewElement(base.default.orderTag);
+                        let tempLP = tools.getNewElement(base.default.orderTag);
                         curParent.lastElementChild.appendChild(tempLP);
                         curParent = tempLP;
-                    }else{
+                    } else {
                         curParent = tmpChild[s];
                     }
                 }
-                                
-                let li = tmlTools.getNewElement('li', {
+
+                let li = tools.getNewElement('li');
+
+                let p = tools.getNewElement('span', {
                     [base.prop.target]: `#${nod[i][k].id}`,
                     style: `font-size:${1.0 - .05 * stack.length}rem`
                 });
-                li.append(nod[i][k].text);
+                p.append(nod[i][k].text);
+
+                li.appendChild(p);
                 curParent.appendChild(li);
-                
+
                 stack.push(nod[i][k]);
             }
         }
@@ -462,7 +466,7 @@ function tmlTitle(data) {
                 ta.setSelectionRange(0, ta.value.length);
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                tmlTools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.\n\n`
+                tools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.\n\n`
                     + `참고: 일부 브라우저에서는 자동 복사가 제한될 수 있습니다.\n`
                     + `필요시 아래 링크를 이용하세요.\n${element.getAttribute('target')}`, 'indexor-linkCopy')
             });
@@ -483,18 +487,18 @@ function tmlTitle(data) {
     }
 
     function footNote(data) {
-        data.contentQuery = tmlTools.findArticleArea(data.contentQuery);
+        data.contentQuery = tools.findArticleArea(data.contentQuery);
         data.cursor = data.cursor || `pointer`;
         data.color = data.color || `#209dd4`;
         data.titleTag = data.titleTag || `h3`;
         let pDoc = '';
-        ['p', 'li', 'h1','h2','h3','h4','h5','h6', 'blockquote'].forEach(element => {
+        ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote'].forEach(element => {
             pDoc += `${data.contentQuery} ${element},`;
         });
         pDoc = pDoc.substring(0, pDoc.length - 1);
         pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
-        let reg = new RegExp(`\\[${tmlTools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
+        let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
         let nod = [];
         let count = 1;
         for (let i = 0; i < pDoc.length; ++i) {
@@ -507,7 +511,7 @@ function tmlTitle(data) {
                     title: regTemp[1],
                     text: regTemp[2]
                 });
-                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" value="${tmlTools.encodeHTML(regTemp[2].replace('\\n', '<br>'))}">[${regTemp[1]}]</sup></span>`);
+                pDoc[i].innerHTML = pDoc[i].innerHTML.replace(reg, `<span class="tmlTitle-footNote" id="tmlTitle-footNoteOri-${count}"><sup style="cursor:${data.cursor}; color:${data.color}" value="${tools.encodeHTML(regTemp[2].replace('\\n', '<br>'))}">[${regTemp[1]}]</sup></span>`);
                 count++;
             }
         }
@@ -515,7 +519,7 @@ function tmlTitle(data) {
         let ftItem = document.querySelectorAll(`${data.contentQuery} .tmlTitle-footNote > sup`);
         for (let i = 0; i < ftItem.length; ++i) {
             ftItem[i].addEventListener("click", function () {
-                tmlTools.alert(ftItem[i].innerText, tmlTools.decodeHTML(ftItem[i].getAttribute(`value`)), `footnote`, document.querySelector(data.contentQuery));
+                tools.alert(ftItem[i].innerText, tools.decodeHTML(ftItem[i].getAttribute(`value`)), `footnote`, document.querySelector(data.contentQuery));
             });
         }
 
@@ -531,7 +535,7 @@ function tmlTitle(data) {
     }
 
     function emojier(data) { //proto type
-        data.contentQuery = tmlTools.findArticleArea(data.contentQuery);
+        data.contentQuery = tools.findArticleArea(data.contentQuery);
         data.contentTag = ['p', 'li'];
         let query = '';
         data.contentTag.forEach(tag => {
