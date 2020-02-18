@@ -21,6 +21,7 @@
 |showReverseBtn             |Boolean				|false  	|목차로 이동하는 버튼 표시 여부                 |
 |showCopyBtn                |Boolean				|false  	|단락 링크 복사 버튼 표시 여부                  |
 |scrollType                 |String 				|-          |이동할 때 스크롤 스타일(scrollIntoView 참고)   |
+|uSetTarget                 |Boolean                |false      |문서 텍스트로 태그 ID값 추가 여부              |
 
 ### 스크립트 적용 방법
 스크립트 적용은 [이 문서를 확인](readme.md#스크립트-적용-방법)하세요. 이 기능을 이용하기 위한 코드는 다음과 같습니다.

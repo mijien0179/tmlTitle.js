@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.17.`,
+        release: `v20.02.18.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -263,10 +263,11 @@ function tmlTitle(data) {
         let base = {
             default: {
                 trigger: (data.trigger || '# index').trim(),            // STR
-                orderTag: data.orderIndex === true && 'OL' || 'UL',    // BOOL, tag name must maintain uppercase.
+                orderTag: data.orderIndex === true && 'OL' || 'UL',     // BOOL, tag name must maintain uppercase.
                 showReverseBtn: data.showReverseBtn === true,           // BOOL
                 showCopyBtn: data.showCopyBtn === true,                 // BOOL
                 scrollType: data.scrollType || null,                    // STR
+                uSetTarget: data.uSetTarget === true || false           // BOOL, user can set target-id if the value is true.
             },
             headerField: {
                 id: 'tmlTitle-tagIndexor',
@@ -329,29 +330,42 @@ function tmlTitle(data) {
         let hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
         let nod = [];
 
-        function FindObjInParagraph(v, index) {
+        function FindObjInParagraph(elt, index) {
             let ret = [];
             do {
                 let tagIndex;
-                if ((tagIndex = base.headerField.idxList.tag.indexOf(v.tagName.toLowerCase())) != -1) {
-                    v.classList.add(base.headerField.idxList.class(false)); // for finding target after this working
+                if ((tagIndex = base.headerField.idxList.tag.indexOf(elt.tagName.toLowerCase())) != -1) {
+                    elt.classList.add(base.headerField.idxList.class(false)); // for finding target after this working
                     let idValue = base.headerField.idxList.id(index++);
 
-                    if (v.id == '') v.id = idValue; // id-value normalization, without tag that already has id value
-                    else idValue = v.id;
-
-                    ret.push({
+                    let usrTarget = null;   // user defined value
+                    let reg = new RegExp('(.*)\/\/ ?(.*)');
+                    let result = reg.exec(elt.innerHTML);
+                    if (base.default.uSetTarget && result) {
+                        elt.innerHTML = result[1].trim();
+                        usrTarget = result[2].trim();
+                        elt.id = `${elt.id + (elt.id !== '' ? '-' : '')}tmlidx-${usrTarget}`;
+                        index--; // uncounting value, if already has id that user defined.
+                    }
+                    
+                    
+                    if (elt.id == '') elt.id = `${usrTarget || idValue}`; // id-value normalization, without tag that already has id value
+                    else idValue = elt.id;
+                    
+                    let item = {
                         order: tagIndex,
                         id: idValue,
-                        text: v.innerText.trim()
-                    });
+                        text: elt.innerText.trim()
+                    };
+
+                    ret.push(item);
                     if (base.default.showCopyBtn === true) { // create button that copying url of this paragraph
                         let copy = tools.getNewElement('span', {
                             class: base.copyBtn.class(false),
-                            target: `${tools.getPostUrl()}#${v.id}`
+                            target: `${tools.getPostUrl()}#${elt.id}`
                         });
                         copy.append('copy');
-                        v.appendChild(copy);
+                        elt.appendChild(copy);
                     }
                     if (base.default.showReverseBtn === true) { // create button that going to index area
                         let revBtn = tools.getNewElement('span', {
@@ -360,13 +374,13 @@ function tmlTitle(data) {
                             title: `${base.headerField.title}로 이동`
                         });
                         revBtn.append('^');
-                        v.appendChild(revBtn);
+                        elt.appendChild(revBtn);
                     }
                 }
 
-                v = v.nextElementSibling;
+                elt = elt.nextElementSibling;
 
-            } while (v && v.tagName.toLowerCase() != 'hr');
+            } while (elt && elt.tagName.toLowerCase() != 'hr');
             return ret;
         }
 
