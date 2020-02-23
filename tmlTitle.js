@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.18.`,
+        release: `v20.02.23.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -120,10 +120,17 @@ function tmlTitle(data) {
             let ret = reg.exec(document.location.href);
             if (ret) return ret[1];
             return null;
+        },
+        createQueryString: function (dfQuery, list){
+            let v = '';
+            list.forEach(query=>{
+                v += `${dfQuery} ${query},`;
+            });
+            return v.substring(0,v.length-1);
         }
     };
 
-    console.log(`tmlTitle.js : 티스토리 블로그 커스텀 스크립트 (${scriptInfo.release})\n` +
+    console.log(`tmlTitle.js : 글쓰기를 더욱 다채롭게 (${scriptInfo.release})\n` +
         `개발자블로그 : ${scriptInfo.blog}\n` +
         `Git 주소: ${scriptInfo.git}\n\n` +
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
@@ -506,10 +513,9 @@ function tmlTitle(data) {
         data.color = data.color || `#209dd4`;
         data.titleTag = data.titleTag || `h3`;
         let pDoc = '';
-        ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote'].forEach(element => {
-            pDoc += `${data.contentQuery} ${element},`;
-        });
-        pDoc = pDoc.substring(0, pDoc.length - 1);
+
+        pDoc = tools.createQueryString(data.contentQuery, ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote']);
+        
         pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
         let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
