@@ -44,6 +44,11 @@
     }
 }
 
+#tmlTitle-alert-foreground > *{
+    margin:0 !important;
+    padding:0 !important;
+}
+
 #tmlTitle-alert-header{
     font-size:1.25em;
     width:100%;

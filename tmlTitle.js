@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.02.23.`,
+        release: `v20.03.07.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -67,8 +67,8 @@ function tmlTitle(data) {
                 if (!isCssFile) {
                     outside.style = `width:100%;height:100%; background:rgba(0,0,0,0.2); position:fixed; top:0; left:0; z-index:999; overflow-y:auto; padding:15px`;
                     inside.style = `width:50%; max-width:620px; scroll:vertical; background:#FFFFFF; box-shadow:0 0 10px rgba(0,0,0,0.1); border-radius:2px; padding:15px; margin:0 auto; transform:translate(-50%, -50%); left:50%; top:20%; position:absolute;`;
-                    eTitle.style = `font-size:1.25em; width:100%`;
-                    eText.style = `width:100%;word-break:break-all;`;
+                    eTitle.style = `font-size:1.25em; width:100%; margin:0; padding:0;`;
+                    eText.style = `width:100%;word-break:break-all; margin:0; padding:0;`;
                 }
             }
             eTitle.append(title);
@@ -121,12 +121,12 @@ function tmlTitle(data) {
             if (ret) return ret[1];
             return null;
         },
-        createQueryString: function (dfQuery, list){
+        createQueryString: function (dfQuery, list) {
             let v = '';
-            list.forEach(query=>{
+            list.forEach(query => {
                 v += `${dfQuery} ${query},`;
             });
-            return v.substring(0,v.length-1);
+            return v.substring(0, v.length - 1);
         }
     };
 
@@ -354,11 +354,11 @@ function tmlTitle(data) {
                         elt.id = `${elt.id + (elt.id !== '' ? '-' : '')}tmlidx-${usrTarget}`;
                         index--; // uncounting value, if already has id that user defined.
                     }
-                    
-                    
+
+
                     if (elt.id == '') elt.id = `${usrTarget || idValue}`; // id-value normalization, without tag that already has id value
                     else idValue = elt.id;
-                    
+
                     let item = {
                         order: tagIndex,
                         id: idValue,
@@ -515,7 +515,7 @@ function tmlTitle(data) {
         let pDoc = '';
 
         pDoc = tools.createQueryString(data.contentQuery, ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote']);
-        
+
         pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
         let reg = new RegExp(`\\[${tools.escapeRegExp(data.trigger)}([^\\ \\]]*) ([^\\]]*)\\]`);
