@@ -12,7 +12,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.03.07.`,
+        release: `v20.03.23.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -514,7 +514,7 @@ function tmlTitle(data) {
         data.titleTag = data.titleTag || `h3`;
         let pDoc = '';
 
-        pDoc = tools.createQueryString(data.contentQuery, ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote']);
+        pDoc = tools.createQueryString(data.contentQuery, ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote','td']);
 
         pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
