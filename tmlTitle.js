@@ -1,5 +1,7 @@
 function tmlTitle(data) {
 
+    data.selfDesign = data.selfDesign || null;
+
     Array.prototype.top = function () {
         return this[this.length - 1];
     };
@@ -12,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.03.24.`,
+        release: `v20.05.25.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -22,8 +24,6 @@ function tmlTitle(data) {
             else return p;
         }
     };
-
-    data.selfDesign = data.selfDesign || null;
 
     var tools = {
         escapeRegExp: function (string) {
@@ -92,20 +92,25 @@ function tmlTitle(data) {
                 outside.remove();
             });
         },
-        findArticleArea: function (target) {
+        findArticleArea: function (target, minimum = -1) {
             let ret;
+            const base = {
+                targetList: ['p', 'li']
+            };
             let tpDoc = {
                 query: target[0],
-                size: document.querySelectorAll(`${target[0]} > p, ${target[0]} li`).length
+                size: document.querySelectorAll(tools.createQueryString(`${target[0]} > `, base.targetList)).length
             };
-            for (let i = 1; i < target.length; ++i) {
-                ret = document.querySelectorAll(`${target[i]} > p, ${target[i]} li`).length;
-                if (tpDoc.size < ret) {
+            for(let i = 1; target.length;++i){
+                ret = document.querySelectorAll(tools.createQueryString(`${target[i]} > `, base.targetList)).length;
+                if(tpDoc.size < ret){
                     tpDoc.query = target[i];
                     tpDoc.size = ret;
                 }
             }
-            return tpDoc.query;
+            if(minimum < 0) return tpDoc.query;
+    
+            return tpDoc.size > minimum && tpDoc.query || null; // if selection target size is lower then minimum size, then return null. otherwise return value is query string.
         },
         getNewElement: function (tag, propList) {
             let element = document.createElement(tag);
@@ -121,10 +126,10 @@ function tmlTitle(data) {
             if (ret) return ret[1];
             return null;
         },
-        createQueryString: function (dfQuery, list) {
+        createQueryString: function (baseQuery, list) {
             let v = '';
             list.forEach(query => {
-                v += `${dfQuery} ${query},`;
+                v += `${baseQuery} ${query},`;
             });
             return v.substring(0, v.length - 1);
         }
@@ -274,19 +279,19 @@ function tmlTitle(data) {
                 showReverseBtn: data.showReverseBtn === true,           // BOOL
                 showCopyBtn: data.showCopyBtn === true,                 // BOOL
                 scrollType: data.scrollType || null,                    // STR
-                uSetTarget: data.uSetTarget === true || false           // BOOL, user can set target-id if the value is true.
+                uSetTarget: data.uSetTarget === true                    // BOOL, user can set target-id if the value is true.
             },
             headerField: {
                 id: 'tmlTitle-tagIndexor',
                 header: {
                     text: data.indexorTitle || 'Index', // STR
-                    tag: data.indexorTitleTag || 'h3'   // STR
+                    tag: data.indexorTitleTag || 'H3'   // STR
                 },
                 list: {
                     id: 'tmlTitle-idx-list'
                 },
                 idxList: {
-                    tag: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], // ARR OF STR, Item order is priority
+                    tag: ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'], // ARR OF STR, Item order is priority
                     id: function (i) {
                         return `tmlTitle-tagIndexor-${i}`;
                     },
@@ -316,7 +321,8 @@ function tmlTitle(data) {
                 }
             },
             prop: {
-                target: `tmlTitle-idx-target`
+                target: `tmlTitle-idx-target`,
+                connectList:['P', 'LI', 'BLOCKQUOTE', 'TD']
             }
         };
 
@@ -341,7 +347,7 @@ function tmlTitle(data) {
             let ret = [];
             do {
                 let tagIndex;
-                if ((tagIndex = base.headerField.idxList.tag.indexOf(elt.tagName.toLowerCase())) != -1) {
+                if ((tagIndex = base.headerField.idxList.tag.indexOf(elt.tagName)) != -1) {
                     elt.classList.add(base.headerField.idxList.class(false)); // for finding target after this working
                     let idValue = base.headerField.idxList.id(index++);
 
@@ -387,7 +393,7 @@ function tmlTitle(data) {
 
                 elt = elt.nextElementSibling;
 
-            } while (elt && elt.tagName.toLowerCase() != 'hr');
+            } while (elt && elt.tagName!= 'HR');
             return ret;
         }
 
@@ -466,7 +472,20 @@ function tmlTitle(data) {
         appendList.forEach(element => { // append indexor Node
             hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
         });
+        { // Linking some part of self document.
+            let pList = document.querySelector(tools.createQueryString(`${data.contentQuery} > `, base.prop.connectList));
 
+            nod.forEach(item =>{
+                item.forEach(v =>{
+                    pList.forEach(elt =>{
+                        elt.innerHTML = elt.innerHTML.split(`<${v.text}>`).join( tools.getNewElement(`span`, {
+                                    [base.prop.target]:v.id,
+                                    class:`tmlTitle-id-selfLinking`
+                                }).outerHTML );
+                    });
+                });
+            });
+        }
         document.querySelectorAll(`[${base.prop.target}]`).forEach(element => { // binding Move Action
             element.addEventListener('click', function (e) {
                 e.preventDefault();
