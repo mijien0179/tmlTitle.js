@@ -14,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v20.05.25.`,
+        release: `v21.02.19.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -139,12 +139,18 @@ function tmlTitle(data) {
         `개발자블로그 : ${scriptInfo.blog}\n` +
         `Git 주소: ${scriptInfo.git}\n\n` +
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
-        `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.\n` +
-        `Chrome 브라우저 기준으로 테스트를 진행합니다.\n\n` +
-        `다음 브라우저에 대해 pre-test가 완료되었습니다.\n` +
-        `Firefox, Naver Whale`);
+        `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.\n`);
 
-    if (document.body.id != 'tt-body-page') return; // function stop, if this page is not Post page.
+    let isActive = false;
+    let activateList = data.activeList || ['tt-body-page'];
+
+    activateList.forEach(value=>{
+        if(document.body.id == value) isActive = true;
+    });
+
+    if(!isActive) return; // function stop, if this page is not authorized to activate script.
+    
+    
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
