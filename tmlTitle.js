@@ -14,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v21.02.19.`,
+        release: `v21.02.14.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -101,15 +101,15 @@ function tmlTitle(data) {
                 query: target[0],
                 size: document.querySelectorAll(tools.createQueryString(`${target[0]} > `, base.targetList)).length
             };
-            for(let i = 1; target.length;++i){
+            for (let i = 0; i < target.length; ++i) {
                 ret = document.querySelectorAll(tools.createQueryString(`${target[i]} > `, base.targetList)).length;
-                if(tpDoc.size < ret){
+                if (tpDoc.size < ret) {
                     tpDoc.query = target[i];
                     tpDoc.size = ret;
                 }
             }
-            if(minimum < 0) return tpDoc.query;
-    
+            if(0 > minimum) return tpDoc.query;
+
             return tpDoc.size > minimum && tpDoc.query || null; // if selection target size is lower then minimum size, then return null. otherwise return value is query string.
         },
         getNewElement: function (tag, propList) {
@@ -131,7 +131,7 @@ function tmlTitle(data) {
             list.forEach(query => {
                 v += `${baseQuery} ${query},`;
             });
-            return v.substring(0, v.length - 1);
+            return v.substring(0, v.length - 2);
         }
     };
 
@@ -141,16 +141,16 @@ function tmlTitle(data) {
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
         `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.\n`);
 
-    let isActive = false;
-    let activateList = data.activeList || ['tt-body-page'];
+    let cIsACtive = false;
+    let cActivateList = data.activeList || ['tt-body-page'];
 
-    activateList.forEach(value=>{
-        if(document.body.id == value) isActive = true;
+    cActivateList.forEach(value => {
+        if (document.body.id === value) cIsACtive = true;
     });
-
-    if(!isActive) return; // function stop, if this page is not authorized to activate script.
     
-    
+    if (cIsACtive === false) return; // function stop, if this page is not authorized to activate script.
+    // return;
+    // if(document.body.id != 'tt-body-page') return;
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
@@ -328,14 +328,14 @@ function tmlTitle(data) {
             },
             prop: {
                 target: `tmlTitle-idx-target`,
-                connectList:['P', 'LI', 'BLOCKQUOTE', 'TD']
+                connectList: ['P', 'LI', 'BLOCKQUOTE', 'TD']
             }
         };
 
         {   // indexor creatable
             data.contentQuery = tools.findArticleArea(data.contentQuery); // find article area
             pDoc = document.querySelectorAll(`${data.contentQuery} > p`); // select article area element
-
+            
             let reg = new RegExp(`^${tools.escapeRegExp(base.default.trigger)}$`); // trigger parsing regexp
             if (!reg.exec(pDoc[pDoc.length - 1].innerText)) return; // escape this function, if trigger is not exists
             else pDoc[pDoc.length - 1].remove(); // delete trigger tag, if this docum has trigger
@@ -348,7 +348,6 @@ function tmlTitle(data) {
 
         let hrList = document.querySelectorAll(`${data.contentQuery} > hr`);
         let nod = [];
-
         function FindObjInParagraph(elt, index) {
             let ret = [];
             do {
@@ -399,7 +398,7 @@ function tmlTitle(data) {
 
                 elt = elt.nextElementSibling;
 
-            } while (elt && elt.tagName!= 'HR');
+            } while (elt && elt.tagName != 'HR');
             return ret;
         }
 
@@ -481,13 +480,13 @@ function tmlTitle(data) {
         { // Linking some part of self document.
             let pList = document.querySelector(tools.createQueryString(`${data.contentQuery} > `, base.prop.connectList));
 
-            nod.forEach(item =>{
-                item.forEach(v =>{
-                    pList.forEach(elt =>{
-                        elt.innerHTML = elt.innerHTML.split(`<${v.text}>`).join( tools.getNewElement(`span`, {
-                                    [base.prop.target]:v.id,
-                                    class:`tmlTitle-id-selfLinking`
-                                }).outerHTML );
+            nod.forEach(item => {
+                item.forEach(v => {
+                    pList.forEach(elt => {
+                        elt.innerHTML = elt.innerHTML.split(`<${v.text}>`).join(tools.getNewElement(`span`, {
+                            [base.prop.target]: v.id,
+                            class: `tmlTitle-id-selfLinking`
+                        }).outerHTML);
                     });
                 });
             });
@@ -539,7 +538,7 @@ function tmlTitle(data) {
         data.titleTag = data.titleTag || `h3`;
         let pDoc = '';
 
-        pDoc = tools.createQueryString(data.contentQuery, ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote','td']);
+        pDoc = tools.createQueryString(data.contentQuery, ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'td']);
 
         pDoc = document.querySelectorAll(pDoc);
         data.trigger = data.trigger || '#';
@@ -607,7 +606,7 @@ function tmlTitle(data) {
         });
 
     }
-
+    
     if (data.emojier) {
         console.log("tmlTitle emojier : proto type");
         emojier(data.emojier);
