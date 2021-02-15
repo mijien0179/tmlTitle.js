@@ -14,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v21.02.14.`,
+        release: `v21.02.15.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -121,7 +121,7 @@ function tmlTitle(data) {
             return element;
         },
         getPostUrl: function () {
-            let reg = new RegExp(`(https?\:\/\/[^\/]*\/[^\?]*)`);
+            let reg = new RegExp(`(https?\:\/\/[^\/]*\/[^\?]*)?[#]`);
             let ret = reg.exec(document.location.href);
             if (ret) return ret[1];
             return null;
@@ -141,16 +141,14 @@ function tmlTitle(data) {
         `이용할 경우 이 로그를 포함한 이 로그에서 사용하는 정보를 변경하거나 삭제하는 행위를 제한합니다.\n` +
         `단, 코드 변경자에 한하여 기존 로그를 유지한 채 정보를 추가하는 것은 허용합니다.\n`);
 
-    let cIsACtive = false;
-    let cActivateList = data.activeList || ['tt-body-page'];
+    let isActive = false;
+    let activateList = data.activeList || ['tt-body-page'];
 
-    cActivateList.forEach(value => {
-        if (document.body.id === value) cIsACtive = true;
+    activateList.forEach(value => {
+        if (document.body.id === value) isActive = true;
     });
     
-    if (cIsACtive === false) return; // function stop, if this page is not authorized to activate script.
-    // return;
-    // if(document.body.id != 'tt-body-page') return;
+    if (isActive === false) return; // function stop, if this page is not authorized to activate script.
 
     function moreLessChanger(data) {
         let parent = document.querySelectorAll(`[data-ke-type='moreLess']`);
@@ -511,9 +509,7 @@ function tmlTitle(data) {
                 ta.setSelectionRange(0, ta.value.length);
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                tools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.\n\n`
-                    + `참고: 일부 브라우저에서는 자동 복사가 제한될 수 있습니다.\n`
-                    + `필요시 아래 링크를 이용하세요.\n${element.getAttribute('target')}`, 'indexor-linkCopy')
+                tools.alert("링크 복사 완료", `링크가 클립보드에 복사되었습니다.\n`, 'indexor-linkCopy')
             });
         });
         let curURL = location.href.toString();
