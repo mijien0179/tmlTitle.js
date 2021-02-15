@@ -486,7 +486,7 @@ function tmlTitle(data) {
                             [base.prop.target]: `#${v.id}`,
                             class: base.selfLinking.class
                         });
-                        aItem.innerText =  `<${v.text}>`
+                        aItem.innerText =  `<${v.text}>`;
                         elt.innerHTML = elt.innerHTML.split(`&lt;${v.text}&gt;`).join(aItem.outerHTML);
                     });
                 });

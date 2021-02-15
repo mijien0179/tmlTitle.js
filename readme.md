@@ -27,20 +27,22 @@ https://github.com/mijien0179/tmlTitle.js/releases
 ---
 스크립트의 구성 속성은 다음과 같습니다.
 
-|속성 이름                  |데이터 타입            |기본값     				|설명   					|
-|--------------------------:|:----------------------|:-------------------------:|---------------------------|
-|delTitleContent            |Boolean                |false      				|타이틀로 쓰는 문장 삭제	|
-|prevWord                   |String                 |'# '       				|접두사 지정				|
-|addButton					|Boolean				|false						|하단에 여닫는 버튼 추가	|
-|defaultOpenTitle			|String					|'더보기'					|기본 타이틀(상태:closed)	|
-|defaultCloseTitle			|String					|'닫기'						|기본 타이틀(상태:opened)	|
-|buttonClass				|String					|'tmlTitle-ml-btn-class'	|버튼 클래스 이름			|
+|속성 이름                  |데이터 타입            |기본값     				|설명   							|
+|--------------------------:|:----------------------|:-------------------------:|-----------------------------------|
+|delTitleContent            |Boolean                |false      				|타이틀로 쓰는 문장 삭제			|
+|prevWord                   |String                 |'# '       				|접두사 지정						|
+|addButton					|Boolean				|false						|하단에 여닫는 버튼 추가			|
+|defaultOpenTitle			|String					|'더보기'					|기본 타이틀(상태:closed)			|
+|defaultCloseTitle			|String					|'닫기'						|기본 타이틀(상태:opened)			|
+|buttonClass				|String					|'tmlTitle-ml-btn-class'	|버튼 클래스 이름					|
+|activeList					|Array[String]			|['tt-body-page']			|스크립트 활성화 페이지 ID 리스트	|
 
 ---
 ### 스크립트 적용 방법
 파일을 다운로드 받습니다. 최신 버전은 [github releases](https://github.com/mijien0179/tmlTitle.js/releases)에서 받을 수 있습니다.
 ![파일 다운로드 예시](./images/download-location.png)<br>
 *최신 버전 상황에 따라 위 이미지는 다를 수 있습니다.* 
+
 
 
 
