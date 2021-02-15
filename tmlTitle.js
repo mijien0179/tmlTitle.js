@@ -327,6 +327,9 @@ function tmlTitle(data) {
             prop: {
                 target: `tmlTitle-idx-target`,
                 connectList: ['P', 'LI', 'BLOCKQUOTE', 'TD']
+            },
+            selfLinking:{
+                class:`tmlTitle-id-selfLinking`
             }
         };
 
@@ -417,7 +420,6 @@ function tmlTitle(data) {
         idxGroup.listTag = tools.getNewElement(base.default.orderTag/*ol, ul*/, {
             id: base.headerField.list.id
         });
-
         // ordering
 
         for (let i = 0; i < nod.length; ++i) { // index tag creator
@@ -476,15 +478,16 @@ function tmlTitle(data) {
             hrList[0].parentElement.insertBefore(element, hrList[0].nextElementSibling);
         });
         { // Linking some part of self document.
-            let pList = document.querySelector(tools.createQueryString(`${data.contentQuery} > `, base.prop.connectList));
-
+            let pList = document.querySelectorAll(tools.createQueryString(`${data.contentQuery} > `, base.prop.connectList));
             nod.forEach(item => {
                 item.forEach(v => {
                     pList.forEach(elt => {
-                        elt.innerHTML = elt.innerHTML.split(`<${v.text}>`).join(tools.getNewElement(`span`, {
-                            [base.prop.target]: v.id,
-                            class: `tmlTitle-id-selfLinking`
-                        }).outerHTML);
+                        let aItem = tools.getNewElement(`span`, {
+                            [base.prop.target]: `#${v.id}`,
+                            class: base.selfLinking.class
+                        });
+                        aItem.innerText =  `<${v.text}>`
+                        elt.innerHTML = elt.innerHTML.split(`&lt;${v.text}&gt;`).join(aItem.outerHTML);
                     });
                 });
             });
@@ -493,7 +496,14 @@ function tmlTitle(data) {
             element.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                scrollMove(element.getAttribute(`${base.prop.target}`), data.scrollType);
+                scrollMove(element.getAttribute(base.prop.target), data.scrollType);
+            });
+        });
+        document.querySelectorAll(`.${base.selfLinking.class}`).forEach(element =>{
+            element.addEventListener('click', function (e){
+                e.preventDefault();
+                e.stopPropagation();
+                scrollMove(element.getAttribute(base.prop.target), data.scrollType);
             });
         });
         document.querySelectorAll(`span.${base.copyBtn.class(false)}`).forEach(element => { // binding alert Message for copy to clipboard
