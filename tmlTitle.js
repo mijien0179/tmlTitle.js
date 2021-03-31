@@ -14,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v21.02.15.`,
+        release: `v21.03.31.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -626,14 +626,12 @@ function tmlTitle(data) {
         ogHrefer(data.ogHrefer);
     }
 
-
-    if (data.footNote) {
-        if (!(`contentQuery` in data.footNote)) console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
-        else footNote(data.footNote);
-    }
-
     if (data.tagIndexor) {
         if (!("contentQuery" in data.tagIndexor)) console.error(`tmlTitle.js : contentQuery is missing from tagIndexor function.`);
         else tagIndexor(data.tagIndexor);
+    }
+    if (data.footNote) {
+        if (!(`contentQuery` in data.footNote)) console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
+        else footNote(data.footNote);
     }
 }
