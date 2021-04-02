@@ -124,7 +124,7 @@ function tmlTitle(data) {
             let reg = new RegExp(`(https?\:\/\/[^\/]*\/[^\?]*)?[#]`);
             let ret = reg.exec(document.location.href);
             if (ret) return ret[1];
-            return null;
+            return document.location.href;
         },
         createQueryString: function (baseQuery, list) {
             let v = '';
