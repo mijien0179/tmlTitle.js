@@ -14,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v21.04.02.`,
+        release: `v21.04.03.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -613,6 +613,27 @@ function tmlTitle(data) {
 
     }
     
+    function codeTabManager(){
+        let codeList = document.querySelectorAll('code');
+        codeList.forEach(elt => {
+            let v = elt.innerHTML.split('\n');
+            let reg = new RegExp(`^([\t]*)`);
+            let count = Number.MAX_VALUE;
+            let result = '';
+            v.forEach(text =>{
+                let temp = reg.exec(text)[1];
+                if(count > temp.length) count = temp.length;
+            });
+
+            v.forEach(text =>{
+                result += `${text.substring(count)}\n`;
+            });
+
+            elt.innerHTML = result.split('\t').join('    ');
+        });
+        
+    }
+
     if (data.emojier) {
         console.log("tmlTitle emojier : proto type");
         emojier(data.emojier);
@@ -633,5 +654,9 @@ function tmlTitle(data) {
     if (data.footNote) {
         if (!(`contentQuery` in data.footNote)) console.error(`tmlTitle.js : contentQuery is missing from footNote function.`);
         else footNote(data.footNote);
+    }
+
+    if(data.codeTabManager){
+        codeTabManager(data.codeTabManager);
     }
 }
