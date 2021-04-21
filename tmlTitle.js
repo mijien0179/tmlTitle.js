@@ -14,7 +14,7 @@ function tmlTitle(data) {
         author: `Min`,
         blog: `https://pang2h.tistory.com`,
         git: `https://github.com/mijien0179/tmlTitle.js`,
-        release: `v21.04.03.`,
+        release: `v21.04.21.`,
         makerCode: function (isCode = true, loader = '') {
             let p = document.createElement('p');
             p.style.fontSize = `12px`;
@@ -615,22 +615,27 @@ function tmlTitle(data) {
     
     function codeTabManager(){
         let codeList = document.querySelectorAll('code');
-        codeList.forEach(elt => {
-            let v = elt.innerHTML.split('\n');
-            let reg = new RegExp(`^([\t]*)`);
-            let count = Number.MAX_VALUE;
-            let result = '';
-            v.forEach(text =>{
-                let temp = reg.exec(text)[1];
-                if(count > temp.length) count = temp.length;
+        {
+            codeList.forEach(elt =>{
+                let v = elt.innerHTML.split(`\n`);
+                let regex = new RegExp(`^([\t ]*)(.*)`);
+                let count = Number.MAX_VALUE;
+                let result = ``;
+                for(let i = 0; i < v.length; ++i){
+                    if(v[i] != ``){
+                        let temp = regex.exec(v[i]);
+                        temp[1] = temp[1].split(`\t`).join('    ');
+                        if(count > temp[1].length) count = temp[1].length;
+                        v[i] = `${temp[1]}${temp[2]}`;
+                    }
+                }
+                for(let i = 0 ; i < v.length; ++i){
+                    if(regex.exec(v[i])[1] != '') v[i] = v[i].substring((count));
+                }
+                result = v.join(`\n`);
+                elt.innerHTML = result;
             });
-
-            v.forEach(text =>{
-                result += `${text.substring(count)}\n`;
-            });
-
-            elt.innerHTML = result.split('\t').join('    ');
-        });
+        }
         
     }
 
